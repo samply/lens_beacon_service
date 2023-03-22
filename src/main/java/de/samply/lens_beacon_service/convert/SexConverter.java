@@ -11,7 +11,7 @@ import java.util.List;
 public class SexConverter implements Converter {
     @Override
     public BeaconFilter convert(LensQuery lensQuery) {
-        BeaconFilter beaconFilter = null;
+        BeaconFilter beaconFilter = defaultBeaconFilter;
         if (((List)lensQuery.value).get(0).equals("male"))
             beaconFilter = new BeaconFilter("id", "NCIT:C20197");
         if (((List)lensQuery.value).get(0).equals("female"))

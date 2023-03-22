@@ -34,12 +34,7 @@ public class BeaconQueryService {
      * @return JSON-format list of individuals.
      */
     public BeaconResponse getIndividuals() {
-        return webClient
-                .get()
-                .uri("/api/individuals/")
-                .retrieve()
-                .bodyToMono(BeaconResponse.class)
-                .block(REQUEST_TIMEOUT);
+        return getObjectsOfType("individuals");
     }
 
     /**
@@ -51,33 +46,74 @@ public class BeaconQueryService {
      * @return JSON-format list of individuals.
      */
     public BeaconResponse postIndividuals(List<BeaconFilter> beaconFilters) {
+        return postObjectsOfType("individuals", beaconFilters);
+    }
+
+    /**
+     * Get all biosamples known to Beacon.
+     *
+     * Use a GET request.
+     *
+     * @return JSON-format list of biosamples.
+     */
+    public BeaconResponse getBiosamples() {
+        return getObjectsOfType("biosamples");
+    }
+
+    /**
+     * Get a filtered count of biosamples know to Beacon.
+     *
+     * Use a POST request.
+     *
+     * @param beaconFilters Filters that will be applied to the query.
+     * @return JSON-format list of biosamples.
+     */
+    public BeaconResponse postBiosamples(List<BeaconFilter> beaconFilters) {
+        log.info("postBiosamples: beaconFilters=" + beaconFilters);
+        return postObjectsOfType("biosamples", beaconFilters);
+    }
+
+    /**
+     * Get all objects of a given type known to Beacon.
+     *
+     * Use a GET request.
+     *
+     * @param type The type of the objects be queries, e.g. "individuals" or "biosamples".
+     * @return JSON-format list of objects of a given type.
+     */
+    private BeaconResponse getObjectsOfType(String type) {
+        return webClient
+                .get()
+                .uri("/api/\" + type + \"/")
+                .retrieve()
+                .bodyToMono(BeaconResponse.class)
+                .block(REQUEST_TIMEOUT);
+    }
+
+    /**
+     * Get a filtered count of objects of a given type know to Beacon.
+     *
+     * Use a POST request.
+     *
+     * @param type The type of the objects be queries, e.g. "individuals" or "biosamples".
+     * @param beaconFilters Filters that will be applied to the query.
+     * @return JSON-format list of objects of a given type.
+     */
+    private BeaconResponse postObjectsOfType(String type, List<BeaconFilter> beaconFilters) {
         BeaconQuery beaconQuery = new BeaconQuery(beaconFilters);
-        BeaconManifest beaconManifest = new BeaconManifest(new BeaconQuery(beaconFilters));
-        String jsonBeaconManifest = "{}";
+        BeaconRequest beaconRequest = new BeaconRequest(new BeaconQuery(beaconFilters));
+        String jsonBeaconRequest = "{}";
         try {
-            jsonBeaconManifest = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(beaconManifest);
+            jsonBeaconRequest = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(beaconRequest);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
 
-//        // Filter for "male"
-//        String jsonBeaconQuery = "{\n" +
-//                "    \"query\": {\n" +
-//                "        \"filters\": [\n" +
-//                "            {\n" +
-//                "                \"id\": \"NCIT:C16576\"\n" +
-//                "            }\n" +
-//                "        ],\n" +
-//                "        \"includeResultsetResponses\": \"HIT\",\n" +
-//                "        \"testMode\": false,\n" +
-//                "        \"requestedGranularity\": \"count\"\n" +
-//                "    }" +
-//                "}";
-        log.info("\njsonBeaconManifest: " + jsonBeaconManifest);
+        log.info("\njsonBeaconRequest: " + jsonBeaconRequest);
         return webClient
                 .post()
-                .uri("/api/individuals/")
-                .bodyValue(jsonBeaconManifest)
+                .uri("/api/" + type + "/")
+                .bodyValue(jsonBeaconRequest)
                 .retrieve()
                 .bodyToMono(BeaconResponse.class)
                 .block(REQUEST_TIMEOUT);

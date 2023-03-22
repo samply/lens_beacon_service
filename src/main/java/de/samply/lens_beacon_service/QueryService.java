@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.samply.lens_beacon_service.beacon.BeaconFilter;
 import de.samply.lens_beacon_service.beacon.BeaconQueryService;
-import de.samply.lens_beacon_service.convert.Convert;
+import de.samply.lens_beacon_service.convert.ConvertBiosamples;
+import de.samply.lens_beacon_service.convert.ConvertIndividuals;
+import de.samply.lens_beacon_service.fhir.MeasureReportGenerator;
 import de.samply.lens_beacon_service.lens.LensQuery;
 import de.samply.lens_beacon_service.lens.LensQueryLeafPicker;
 import lombok.extern.slf4j.Slf4j;
@@ -23,18 +25,25 @@ public class QueryService {
 
     public String runQuery(LensQuery lensQuery) {
         List<LensQuery> lensQueryLeafNodeList = new LensQueryLeafPicker().crawl(lensQuery);
-        List<BeaconFilter> beaconFilters = new Convert().convert(lensQueryLeafNodeList);
+        List<BeaconFilter> beaconFiltersIndividuals = new ConvertIndividuals().convert(lensQueryLeafNodeList);
+        List<BeaconFilter> beaconFiltersBiosamples = new ConvertBiosamples().convert(lensQueryLeafNodeList);
 
         try {
             log.info("\npostPatientCount: lensQuery" + lensQuery);
             log.info("\njsonLensQueryLeafNodeList: " + new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(lensQueryLeafNodeList));
-            log.info("\nbeaconFilterList: " + new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(beaconFilters));
+            log.info("\nbeaconFiltersIndividuals: " + new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(beaconFiltersIndividuals));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
 
-        Integer individualCount = (Integer) beaconQueryService.postIndividuals(beaconFilters).responseSummary.get("numTotalResults");
-        log.info("individualCount: " + individualCount);
-        return individualCount.toString();
+        Integer countIndividuals = (Integer) beaconQueryService.postIndividuals(beaconFiltersIndividuals).responseSummary.get("numTotalResults");
+        log.info("countIndividuals: " + countIndividuals);
+        Integer countBiosamples = (Integer) beaconQueryService.postBiosamples(beaconFiltersBiosamples).responseSummary.get("numTotalResults");
+        log.info("countBiosamples: " + countBiosamples);
+        MeasureReportGenerator measureReportGenerator = new MeasureReportGenerator();
+        measureReportGenerator.setPatientCount(countIndividuals);
+        String jsonResult = measureReportGenerator.toJsonString();
+        log.info("\njsonResult: " + jsonResult);
+        return jsonResult;
     }
 }

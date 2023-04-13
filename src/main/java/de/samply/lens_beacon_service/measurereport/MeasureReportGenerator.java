@@ -30,15 +30,12 @@ public class MeasureReportGenerator extends MeasureReport {
         measureReport.setStatus(MeasureReport.MeasureReportStatus.COMPLETE);
         measureReport.setType(MeasureReport.MeasureReportType.SUMMARY);
         measureReport.setDate(new Date());
-        //measureReport.setMeasure("urn:uuid:533741bb-6176-41ea-b5e7-16f5a3742802");
         measureReport.setMeasure("urn:uuid:" + UUID.randomUUID());
         measureReport.addExtension(createExtension());
         measureReport.setPeriod(createPeriod());
         measureReport.addGroup(new PatientsGroupGenerator().generate());
         measureReport.addGroup(new DiagnosisGroupGenerator().generate());
         measureReport.addGroup(new SpecimenGroupGenerator().generate());
-        measureReport.addGroup(new ProceduresGroupGenerator().generate());
-        measureReport.addGroup(new MedicationStatementsGroupGenerator().generate());
     }
 
     /**

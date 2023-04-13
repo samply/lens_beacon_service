@@ -6,7 +6,7 @@ import de.samply.lens_beacon_service.beacon.BeaconFilter;
 import de.samply.lens_beacon_service.beacon.BeaconQueryService;
 import de.samply.lens_beacon_service.convert.ConvertBiosamples;
 import de.samply.lens_beacon_service.convert.ConvertIndividuals;
-import de.samply.lens_beacon_service.fhir.MeasureReportGenerator;
+import de.samply.lens_beacon_service.measurereport.MeasureReportGenerator;
 import de.samply.lens_beacon_service.lens.LensQuery;
 import de.samply.lens_beacon_service.lens.LensQueryLeafPicker;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,8 @@ public class QueryService {
         log.info("countBiosamples: " + countBiosamples);
         MeasureReportGenerator measureReportGenerator = new MeasureReportGenerator();
         measureReportGenerator.setPatientCount(countIndividuals);
-        String jsonResult = measureReportGenerator.toJsonString();
+        measureReportGenerator.setSpecimenCount(countBiosamples);
+        String jsonResult = measureReportGenerator.toString();
         log.info("\njsonResult: " + jsonResult);
         return jsonResult;
     }

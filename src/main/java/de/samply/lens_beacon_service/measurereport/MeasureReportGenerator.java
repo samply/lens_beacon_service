@@ -36,6 +36,7 @@ public class MeasureReportGenerator extends MeasureReport {
         measureReport.addGroup(new PatientsGroupGenerator().generate());
         measureReport.addGroup(new DiagnosisGroupGenerator().generate());
         measureReport.addGroup(new SpecimenGroupGenerator().generate());
+        measureReport.addGroup(new GeneticsGroupGenerator().generate());
     }
 
     /**
@@ -54,6 +55,15 @@ public class MeasureReportGenerator extends MeasureReport {
      */
     public void setSpecimenCount(int count) {
         setGroupPopulationCount("specimen", count);
+    }
+
+    /**
+     * Set the total number of genomic variations for this measure report.
+     *
+     * @param count Genomic variation count.
+     */
+    public void setGenomicVariationCount(int count) {
+        setGroupPopulationCount("genetics", count);
     }
 
     /**

@@ -16,12 +16,14 @@ public class SampleTypeConverter implements Converter {
     public BeaconFilter convert(LensQuery lensQuery) {
         log.info("convert: lensQuery=" + lensQuery);
         BeaconFilter beaconFilter = defaultBeaconFilter;
-        if (((List)lensQuery.value).get(0).equals("whole-blood"))
+        if (((List)lensQuery.value).get(0).equals("blood"))
             beaconFilter = new BeaconFilter("id", "UBERON:0000178");
         if (((List)lensQuery.value).get(0).equals("blood-serum"))
-            beaconFilter = new BeaconFilter("id", "UBERON:0000178");
+            beaconFilter = new BeaconFilter("id", "UBERON:0001977");
         if (((List)lensQuery.value).get(0).equals("blood-plasma"))
-            beaconFilter = new BeaconFilter("id", "UBERON:0000178");
+            beaconFilter = new BeaconFilter("id", "UBERON:0001969");
+        if (((List)lensQuery.value).get(0).equals("lymph"))
+            beaconFilter = new BeaconFilter("id", "UBERON:0002391");
         return beaconFilter;
     }
 }

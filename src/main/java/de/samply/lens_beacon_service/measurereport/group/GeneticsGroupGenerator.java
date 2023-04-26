@@ -5,12 +5,12 @@ import org.hl7.fhir.r4.model.MeasureReport;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MedicationStatementsGroupGenerator extends GroupGenerator {
+public class GeneticsGroupGenerator extends GroupGenerator {
     public MeasureReport.MeasureReportGroupComponent generate() {
-        group.setCode(createTextCodeableConcept("medicationStatements"));
+        group.setCode(createTextCodeableConcept("genetics"));
 
         List<MeasureReport.MeasureReportGroupStratifierComponent> stratifiers = new ArrayList<MeasureReport.MeasureReportGroupStratifierComponent>();
-        stratifiers.add(createStratifier("MedicationType"));
+        stratifiers.add(createNullStratifier());
         group.setStratifier(stratifiers);
 
         return group;

@@ -7,10 +7,7 @@ import java.util.List;
 
 public class SpecimenGroupGenerator extends GroupGenerator {
     public MeasureReport.MeasureReportGroupComponent generate() {
-        MeasureReport.MeasureReportGroupComponent group = new MeasureReport.MeasureReportGroupComponent();
-
         group.setCode(createTextCodeableConcept("specimen"));
-        group.setPopulation(createPopulations(0));
 
         List<MeasureReport.MeasureReportGroupStratifierComponent> stratifiers = new ArrayList<MeasureReport.MeasureReportGroupStratifierComponent>();
         stratifiers.add(createNullStratifier());

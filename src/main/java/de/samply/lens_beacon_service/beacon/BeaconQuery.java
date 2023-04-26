@@ -21,5 +21,6 @@ public class BeaconQuery {
     public List<BeaconFilter> filters;
     public String includeResultsetResponses = "HIT";
     public boolean testMode = false;
-    public String requestedGranularity = "count";
+    //public String requestedGranularity = "count";
+    public String requestGranularity = "COUNT";
 }

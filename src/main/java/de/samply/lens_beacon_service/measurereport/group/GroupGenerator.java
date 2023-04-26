@@ -8,6 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class GroupGenerator {
+    protected MeasureReport.MeasureReportGroupComponent group;
+
+    public GroupGenerator() {
+        group = new MeasureReport.MeasureReportGroupComponent();
+        group.setPopulation(createPopulations(-1));
+    }
 
     public abstract MeasureReport.MeasureReportGroupComponent generate();
 

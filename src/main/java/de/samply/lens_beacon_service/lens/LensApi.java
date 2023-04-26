@@ -3,7 +3,6 @@ package de.samply.lens_beacon_service.lens;
 import de.samply.lens_beacon_service.QueryService;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.Operation;
-import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
@@ -31,33 +30,33 @@ public class LensApi {
 
   private QueryService queryService = new QueryService();
 
-  /**
-   * Returns the count of all known patients.
-   *
-   * @return count of patients.
-   */
-  @Path("/patientCount")
-  @Produces(MediaType.TEXT_PLAIN)
-  @GET
-  @APIResponses({
-          @APIResponse(
-                  responseCode = "200",
-                  description = "ok",
-                  content = @Content(
-                          mediaType = MediaType.APPLICATION_JSON,
-                          schema = @Schema(implementation = String.class))),
-          @APIResponse(responseCode = "500", description = "Internal Server Error")
-  })
-  @Operation(summary = "Retrieve count of all known patients")
-  public Response getPatientCount() {
-    try {
-      String jsonResult = queryService.runQuery();
-      return addCorsHeaders(Response.ok(jsonResult)).build();
-    } catch (Exception e) {
-      log.error("Error while creating a structured query.", e);
-      return Response.status(INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-    }
-  }
+//  /**
+//   * Returns the count of all known patients.
+//   *
+//   * @return count of patients.
+//   */
+//  @Path("/patientCount")
+//  @Produces(MediaType.TEXT_PLAIN)
+//  @GET
+//  @APIResponses({
+//          @APIResponse(
+//                  responseCode = "200",
+//                  description = "ok",
+//                  content = @Content(
+//                          mediaType = MediaType.APPLICATION_JSON,
+//                          schema = @Schema(implementation = String.class))),
+//          @APIResponse(responseCode = "500", description = "Internal Server Error")
+//  })
+//  @Operation(summary = "Retrieve count of all known patients")
+//  public Response getPatientCount() {
+//    try {
+//      String jsonResult = queryService.runQuery();
+//      return addCorsHeaders(Response.ok(jsonResult)).build();
+//    } catch (Exception e) {
+//      log.error("Error while creating a structured query.", e);
+//      return Response.status(INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+//    }
+//  }
 
   /**
    * Returns a measure report that depends on the supplied AST query.

@@ -26,90 +26,15 @@ public class BeaconQueryService {
     public BeaconQueryService(String siteUrl) {
         this.siteUrl = siteUrl;
         this.webClient = WebClient.builder().baseUrl(siteUrl).build();
-
-//        // Create a Wiretap connector for logging what happens in this API
-//        HttpClient httpClient = HttpClient
-//                .create()
-//                .wiretap(this.getClass().getCanonicalName(),
-//                        LogLevel.DEBUG,
-//                        AdvancedByteBufFormat.TEXTUAL);
-//        ClientHttpConnector conn = new ReactorClientHttpConnector(httpClient);
-//
-//        this.webClient =  WebClient.builder()
-//                .clientConnector(conn)
-//                .baseUrl(siteUrl)
-//                .build();
     }
 
-//    /**
-//     * Get all individuals known to Beacon.
-//     *
-//     * Use a GET request.
-//     *
-//     * @return JSON-format list of individuals.
-//     */
-//    public BeaconResponse getIndividuals() {
-//        return getObjectsOfType("individuals");
-//    }
-//
-    /**
-     * Get a filtered count of individuals know to Beacon.
-     *
-     * Use a POST request.
-     *
-     * @param beaconFilters Filters that will be applied to the query.
-     * @return JSON-format list of individuals.
-     */
-    public BeaconResponse postIndividuals(List<BeaconFilter> beaconFilters) {
-        return postObjectsOfType("individuals", beaconFilters);
-    }
-
-//    /**
-//     * Get all biosamples known to Beacon.
-//     *
-//     * Use a GET request.
-//     *
-//     * @return JSON-format list of biosamples.
-//     */
-//    public BeaconResponse getBiosamples() {
-//        return getObjectsOfType("biosamples");
-//    }
-//
-    /**
-     * Get a filtered count of biosamples know to Beacon.
-     *
-     * Use a POST request.
-     *
-     * @param beaconFilters Filters that will be applied to the query.
-     * @return JSON-format list of biosamples.
-     */
-    public BeaconResponse postBiosamples(List<BeaconFilter> beaconFilters) {
-        log.info("postBiosamples: beaconFilters=" + beaconFilters);
-        return postObjectsOfType("biosamples", beaconFilters);
-    }
-
-//    /**
-//     * Get all genomic variations known to Beacon.
-//     *
-//     * Use a GET request.
-//     *
-//     * @return JSON-format list of genomic variations.
-//     */
-//    public BeaconResponse getGenomicVariations() {
-//        return getObjectsOfType("genomicVariations");
-//    }
-//
-    /**
-     * Get a filtered count of genomic variations know to Beacon.
-     *
-     * Use a POST request.
-     *
-     * @param beaconFilters Filters that will be applied to the query.
-     * @return JSON-format list of genomic variations.
-     */
-    public BeaconResponse postGenomicVariations(List<BeaconFilter> beaconFilters) {
-        log.info("postGenomicVariations: beaconFilters=" + beaconFilters);
-        return postObjectsOfType("genomicVariations", beaconFilters);
+    public BeaconResponse queryEntry(BeaconEntryType entryType, List<BeaconFilter> filters) {
+        if (entryType == null)
+            return null;
+        if (entryType.method.equals("POST"))
+            return postObjectsOfType(entryType.uri, filters);
+        else
+            return getObjectsOfType(entryType.uri);
     }
 
     /**
@@ -117,13 +42,11 @@ public class BeaconQueryService {
      *
      * Use a GET request.
      *
-     * @param type The type of the objects be queries, e.g. "individuals" or "biosamples".
+     * @param uri The URI of the objects be queried, e.g. "individuals" or "biosamples".
      * @return JSON-format list of objects of a given type.
      */
-    private BeaconResponse getObjectsOfType(String type) {
-        String uri = "/" + type;
-
-        log.info("\nFull URL: " + siteUrl + uri);
+    private BeaconResponse getObjectsOfType(String uri) {
+        log.info("\nGET Full URL: " + siteUrl + uri);
 
         return webClient
                 .get()
@@ -138,12 +61,11 @@ public class BeaconQueryService {
      *
      * Use a POST request.
      *
-     * @param type The type of the objects be queries, e.g. "individuals" or "biosamples".
+     * @param uri The URI of the objects be queried, e.g. "individuals" or "biosamples".
      * @param beaconFilters Filters that will be applied to the query.
      * @return JSON-format list of objects of a given type.
      */
-    private BeaconResponse postObjectsOfType(String type, List<BeaconFilter> beaconFilters) {
-        BeaconQuery beaconQuery = new BeaconQuery(beaconFilters);
+    private BeaconResponse postObjectsOfType(String uri, List<BeaconFilter> beaconFilters) {
         BeaconRequest beaconRequest = new BeaconRequest(new BeaconQuery(beaconFilters));
         String jsonBeaconRequest = "{}";
         try {
@@ -151,19 +73,13 @@ public class BeaconQueryService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        String uri = "/" + type;
-
-        log.info("\ntype: " + type);
+        log.info("\nuri: " + uri);
         log.info("\njsonBeaconRequest: " + jsonBeaconRequest);
-        log.info("\nFull URL: " + siteUrl + uri);
+        log.info("\nPOST Full URL: " + siteUrl + uri);
 
         return webClient
                 .post()
                 .uri(uri)
-//                .contentType(MediaType.APPLICATION_JSON) // added
-//                .contentType(MediaType.TEXT_PLAIN) // added
-//                .accept(MediaType.APPLICATION_JSON) // added
-//                .accept(MediaType.ALL) // added
                 .bodyValue(jsonBeaconRequest)
                 .retrieve()
                 .bodyToMono(BeaconResponse.class)

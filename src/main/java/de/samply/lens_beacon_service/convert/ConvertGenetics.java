@@ -2,22 +2,22 @@ package de.samply.lens_beacon_service.convert;
 
 import de.samply.lens_beacon_service.beacon.BeaconFilter;
 import de.samply.lens_beacon_service.lens.LensQuery;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * Convert a list of LensQuery leaf elements into a list of Beacon filters for individuals.
+ * Convert a list of LensQuery leaf elements into a list of Beacon filters for biosamples.
  */
 
-public class ConvertIndividuals extends Convert {
+@Slf4j
+public class ConvertGenetics extends Convert {
     @Override
     public BeaconFilter convert(LensQuery lensQuery) {
         BeaconFilter beaconFilter = null;
         if (lensQuery.key != null)
+            log.info("lensQuery.key: " + lensQuery.key);
             switch (lensQuery.key) {
-                case "gender":
-                    beaconFilter = new SexConverter().convert(lensQuery);
-                    break;
-                case "ethnicity":
-                    beaconFilter = new EthnicityConverter().convert(lensQuery);
+                case "genomic_variation":
+                    beaconFilter = new GeneticVariationConverter().convert(lensQuery);
                     break;
             }
 

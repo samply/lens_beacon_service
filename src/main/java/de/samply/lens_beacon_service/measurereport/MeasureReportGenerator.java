@@ -2,16 +2,17 @@ package de.samply.lens_beacon_service.measurereport;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
-import de.samply.lens_beacon_service.measurereport.group.*;
+import de.samply.lens_beacon_service.measurereport.group.DiagnosisGroupGenerator;
+import de.samply.lens_beacon_service.measurereport.group.GeneticsGroupGenerator;
+import de.samply.lens_beacon_service.measurereport.group.PatientsGroupGenerator;
+import de.samply.lens_beacon_service.measurereport.group.SpecimenGroupGenerator;
 import lombok.extern.slf4j.Slf4j;
-import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.MeasureReport;
-import org.hl7.fhir.r4.model.Period;
-import org.hl7.fhir.r4.model.Quantity;
+import org.hl7.fhir.r4.model.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -48,6 +49,34 @@ public class MeasureReportGenerator extends MeasureReport {
         setGroupPopulationCount("patients", count);
     }
 
+    public void setPatientGenderCounts(int femaleCount, int maleCount) {
+        MeasureReportGroupComponent group = getGroup("patients");
+        List<MeasureReportGroupStratifierComponent> stratifierComponents = group.getStratifier();
+        for (MeasureReportGroupStratifierComponent stratifierComponent: stratifierComponents) {
+            CodeableConcept code = stratifierComponent.getCode().get(0);
+            String text = code.getText();
+            if (text.equals("Gender")) {
+                stratifierComponent.addStratum(Utils.createStratum("female", femaleCount));
+                stratifierComponent.addStratum(Utils.createStratum("male", maleCount));
+                break;
+            }
+        }
+    }
+
+    public void setPatientEthnicityCounts(Map<String, Integer> ethnicityCounts) {
+        MeasureReportGroupComponent group = getGroup("patients");
+        List<MeasureReportGroupStratifierComponent> stratifierComponents = group.getStratifier();
+        for (MeasureReportGroupStratifierComponent stratifierComponent: stratifierComponents) {
+            CodeableConcept code = stratifierComponent.getCode().get(0);
+            String text = code.getText();
+            if (text.equals("Ethnicity")) {
+                for (String ethnicity: ethnicityCounts.keySet())
+                    stratifierComponent.addStratum(Utils.createStratum(ethnicity, ethnicityCounts.get(ethnicity)));
+                break;
+            }
+        }
+    }
+
     /**
      * Set the total number of specimens for this measure report.
      *
@@ -55,6 +84,23 @@ public class MeasureReportGenerator extends MeasureReport {
      */
     public void setSpecimenCount(int count) {
         setGroupPopulationCount("specimen", count);
+    }
+
+    public void setSpecimenTypeCounts(int bloodCount, int bloodSerumCount, int bloodPlasmaCount, int lymphCount) {
+        MeasureReportGroupComponent group = getGroup("specimen");
+        List<MeasureReportGroupStratifierComponent> stratifierComponents = group.getStratifier();
+        for (MeasureReportGroupStratifierComponent stratifierComponent: stratifierComponents) {
+            CodeableConcept code = stratifierComponent.getCode().get(0);
+            String text = code.getText();
+            log.info("setSpecimenTypeCounts: text: " + text);
+            if (text.equals("sample_kind")) {
+                stratifierComponent.addStratum(Utils.createStratum("blood", bloodCount));
+                stratifierComponent.addStratum(Utils.createStratum("blood-plasma", bloodPlasmaCount));
+                stratifierComponent.addStratum(Utils.createStratum("blood-serum", bloodSerumCount));
+                stratifierComponent.addStratum(Utils.createStratum("lymph", lymphCount));
+                break;
+            }
+        }
     }
 
     /**
@@ -87,7 +133,7 @@ public class MeasureReportGenerator extends MeasureReport {
      * @param groupName Name of group.
      * @param count Population count.
      */
-    private void setGroupPopulationCount(String groupName, int count) {
+    public void setGroupPopulationCount(String groupName, int count) {
         MeasureReportGroupComponent group = getGroup(groupName);
         List<MeasureReport.MeasureReportGroupPopulationComponent> populations = group.getPopulation();
         if (populations == null || populations.size() == 0)

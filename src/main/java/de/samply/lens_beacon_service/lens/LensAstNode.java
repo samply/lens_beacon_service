@@ -7,13 +7,15 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 /**
- * Used to generate objects that hold AST (query tree) data from the Lens.
+ * Model for one of the nodes in the AST (query tree) from Lens.
+ *
+ * Hierarchical tree structures can be realized by filling the "children" list.
  */
 
 @Slf4j
-public class LensQuery implements Cloneable {
+public class LensAstNode implements Cloneable {
     public String operand;
-    public List<LensQuery> children;
+    public List<LensAstNode> children;
     public String key;
     public String en;
     public String de;

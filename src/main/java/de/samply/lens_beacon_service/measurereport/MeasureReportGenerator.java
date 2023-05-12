@@ -12,16 +12,18 @@ import org.hl7.fhir.r4.model.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
- * Generates a single FHIR measure report for Lens.
+ * Generates a single FHIR measure report.
  *
  * Which groups get added to this report is hard-coded into the constructor.
  *
  * Several setter methods are provided to allow counts for various measures to
- * be set, e.g. patient count or specimen count.
+ * be set, e.g. patient count or specimen count, as well as adding counts to
+ * the various stratifiers.
  */
 @Slf4j
 public class MeasureReportGenerator extends MeasureReport {
@@ -49,6 +51,12 @@ public class MeasureReportGenerator extends MeasureReport {
         setGroupPopulationCount("patients", count);
     }
 
+    /**
+     * Add male and female counts to gender stratifier.
+     *
+     * @param femaleCount
+     * @param maleCount
+     */
     public void setPatientGenderCounts(int femaleCount, int maleCount) {
         MeasureReportGroupComponent group = getGroup("patients");
         List<MeasureReportGroupStratifierComponent> stratifierComponents = group.getStratifier();
@@ -56,13 +64,18 @@ public class MeasureReportGenerator extends MeasureReport {
             CodeableConcept code = stratifierComponent.getCode().get(0);
             String text = code.getText();
             if (text.equals("Gender")) {
-                stratifierComponent.addStratum(Utils.createStratum("female", femaleCount));
-                stratifierComponent.addStratum(Utils.createStratum("male", maleCount));
+                stratifierComponent.addStratum(MeasureReportUtils.createStratum("female", femaleCount));
+                stratifierComponent.addStratum(MeasureReportUtils.createStratum("male", maleCount));
                 break;
             }
         }
     }
 
+    /**
+     * Add counts for the various ethnicities to the ethnicity stratifier.
+     *
+     * @param ethnicityCounts
+     */
     public void setPatientEthnicityCounts(Map<String, Integer> ethnicityCounts) {
         MeasureReportGroupComponent group = getGroup("patients");
         List<MeasureReportGroupStratifierComponent> stratifierComponents = group.getStratifier();
@@ -70,8 +83,11 @@ public class MeasureReportGenerator extends MeasureReport {
             CodeableConcept code = stratifierComponent.getCode().get(0);
             String text = code.getText();
             if (text.equals("Ethnicity")) {
-                for (String ethnicity: ethnicityCounts.keySet())
-                    stratifierComponent.addStratum(Utils.createStratum(ethnicity, ethnicityCounts.get(ethnicity)));
+                // Order by key length. This looks better in the Lens histogram.
+                for (String ethnicity: ethnicityCounts.keySet().stream()
+                        .sorted((str1, str2) -> str1.length() - str2.length())
+                        .collect(Collectors.toList()))
+                    stratifierComponent.addStratum(MeasureReportUtils.createStratum(ethnicity, ethnicityCounts.get(ethnicity)));
                 break;
             }
         }
@@ -94,10 +110,10 @@ public class MeasureReportGenerator extends MeasureReport {
             String text = code.getText();
             log.info("setSpecimenTypeCounts: text: " + text);
             if (text.equals("sample_kind")) {
-                stratifierComponent.addStratum(Utils.createStratum("blood", bloodCount));
-                stratifierComponent.addStratum(Utils.createStratum("blood-plasma", bloodPlasmaCount));
-                stratifierComponent.addStratum(Utils.createStratum("blood-serum", bloodSerumCount));
-                stratifierComponent.addStratum(Utils.createStratum("lymph", lymphCount));
+                stratifierComponent.addStratum(MeasureReportUtils.createStratum("blood", bloodCount));
+                stratifierComponent.addStratum(MeasureReportUtils.createStratum("blood-plasma", bloodPlasmaCount));
+                stratifierComponent.addStratum(MeasureReportUtils.createStratum("blood-serum", bloodSerumCount));
+                stratifierComponent.addStratum(MeasureReportUtils.createStratum("lymph", lymphCount));
                 break;
             }
         }
@@ -159,6 +175,7 @@ public class MeasureReportGenerator extends MeasureReport {
         return group;
     }
 
+    // Taken from Lens, may not be strictly necessary.
     private Extension createExtension() {
         Extension extension = new Extension("https://samply.github.io/blaze/fhir/StructureDefinition/eval-duration");
         Quantity quantity = new Quantity();
@@ -171,6 +188,7 @@ public class MeasureReportGenerator extends MeasureReport {
         return extension;
     }
 
+    // Taken from Lens, may not be strictly necessary.
     private Period createPeriod() {
         Period period = new Period();
         Date startDate = new Date();

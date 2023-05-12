@@ -3,6 +3,14 @@ package de.samply.lens_beacon_service.beacon;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Provides a static list of known Beacon sites.
+ *
+ * This is basically a hard-coded list of sites that will be contacted when a
+ * query is received. It would be better if this information resided in a database.
+ * Some kind of registration API would also be a good idea.
+ */
+
 public class BeaconSites {
     // Make this class a singleton
     private BeaconSites() {
@@ -35,10 +43,10 @@ public class BeaconSites {
                 individuals, biosamples, genomicVariations);
 
         sites.add(hdCineca);
-        sites.add(egaCineca);
-        sites.add(molgenisMutations);
-        sites.add(rdcPlayground);
-        sites.add(progenetix);
+//        sites.add(egaCineca);
+//        sites.add(molgenisMutations);
+//        sites.add(rdcPlayground);
+//        sites.add(progenetix);
     }
 
     public static List<BeaconSite> getSites() {

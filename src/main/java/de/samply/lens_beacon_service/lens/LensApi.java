@@ -30,39 +30,13 @@ public class LensApi {
 
   private QueryService queryService = new QueryService();
 
-//  /**
-//   * Returns the count of all known patients.
-//   *
-//   * @return count of patients.
-//   */
-//  @Path("/patientCount")
-//  @Produces(MediaType.TEXT_PLAIN)
-//  @GET
-//  @APIResponses({
-//          @APIResponse(
-//                  responseCode = "200",
-//                  description = "ok",
-//                  content = @Content(
-//                          mediaType = MediaType.APPLICATION_JSON,
-//                          schema = @Schema(implementation = String.class))),
-//          @APIResponse(responseCode = "500", description = "Internal Server Error")
-//  })
-//  @Operation(summary = "Retrieve count of all known patients")
-//  public Response getPatientCount() {
-//    try {
-//      String jsonResult = queryService.runQuery();
-//      return addCorsHeaders(Response.ok(jsonResult)).build();
-//    } catch (Exception e) {
-//      log.error("Error while creating a structured query.", e);
-//      return Response.status(INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-//    }
-//  }
-
   /**
-   * Returns a measure report that depends on the supplied AST query.
+   * Converts the incoming AST query into a form that Beacon understands,
+   * runs the query against one or more Beacon sites and returns a serialized
+   * list of LensResult objects, one per Beacon site.
    *
-   * @param lensQuery query, in AST format.
-   * @return FHIR-style measure report.
+   * @param lensAstNode query, in AST format.
+   * @return Serialized list of LensResult objects.
    */
   @POST
   @Path("/ast")
@@ -76,16 +50,16 @@ public class LensApi {
       @Parameter(
           name = "queryContainer",
           description = "Structured query and the target as a query container object.",
-          schema = @Schema(implementation = LensQuery.class))
-      LensQuery lensQuery) {
+          schema = @Schema(implementation = LensAstNode.class))
+      LensAstNode lensAstNode) {
     log.info("postAstQuery: entered");
-    if (lensQuery == null) {
+    if (lensAstNode == null) {
       return Response.status(BAD_REQUEST)
           .entity("Missing payload. Expected a query container encoded in JSON.")
           .build();
     }
     try {
-      String jsonResult = queryService.runQuery(lensQuery);
+      String jsonResult = queryService.runQuery(lensAstNode);
 
       return addCorsHeaders(Response.ok(jsonResult)).header("Access-Control-Expose-Headers", "Location").build();
     } catch (Exception e) {

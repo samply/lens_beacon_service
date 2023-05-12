@@ -1,5 +1,11 @@
 package de.samply.lens_beacon_service.beacon;
 
+/**
+ * Bundles together all the information known about a site hosting a Beacon API.
+ *
+ * This information includes a name that we can give the site, the URL of the
+ * API, plus information about some of the endpoints (BeaconEntryType).
+ */
 public class BeaconSite {
     public BeaconSite(String name, String url, BeaconEntryType individuals, BeaconEntryType biosamples, BeaconEntryType genomicVariations) {
         this.name = name;

@@ -9,7 +9,17 @@ import java.time.Duration;
 import java.util.List;
 
 /**
- * Send queries to the Beacon API.
+ * Send queries to the Beacon API. Both GET and POST requests are possible.
+ *
+ * The main things here are the URI and the filter.
+ *
+ * The URI specifies the endpoint we are talking to, e,g, "individuals/".
+ *
+ * The filter is the thing that one would generally understand as a query. It
+ * generally comprises of a resource name (e.g. Omim), an ID, and possibly
+ * a matching value. It is packed in JSON.
+ *
+ * Only the POST endpoints work with filters sent in the request body.
  */
 
 @Slf4j
@@ -69,6 +79,7 @@ public class BeaconQueryService {
         BeaconRequest beaconRequest = new BeaconRequest(new BeaconQuery(beaconFilters));
         String jsonBeaconRequest = "{}";
         try {
+            // Convert the request into JSON, to be sent in the body.
             jsonBeaconRequest = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(beaconRequest);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

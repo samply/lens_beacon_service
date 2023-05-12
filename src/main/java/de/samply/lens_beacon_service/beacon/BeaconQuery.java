@@ -21,6 +21,9 @@ public class BeaconQuery {
     public List<BeaconFilter> filters;
     public String includeResultsetResponses = "HIT";
     public boolean testMode = false;
+
+    // Different versions of Beacon use different key names for specifying
+    // the request granularity (boolean, count or detail).
     //public String requestedGranularity = "count";
     public String requestGranularity = "COUNT";
 }

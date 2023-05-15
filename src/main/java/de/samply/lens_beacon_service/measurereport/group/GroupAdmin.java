@@ -1,6 +1,5 @@
 package de.samply.lens_beacon_service.measurereport.group;
 
-import de.samply.lens_beacon_service.measurereport.MeasureReportUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.MeasureReport;
@@ -67,7 +66,7 @@ public abstract class GroupAdmin {
      * @return
      */
     protected  MeasureReport.MeasureReportGroupComponent generate(String groupName, String stratifierName) {
-        group.setCode(MeasureReportUtils.createTextCodeableConcept(groupName));
+        group.setCode(createTextCodeableConcept(groupName));
 
         List<MeasureReport.MeasureReportGroupStratifierComponent> stratifiers = new ArrayList<MeasureReport.MeasureReportGroupStratifierComponent>();
         if (stratifierName == null)
@@ -88,7 +87,7 @@ public abstract class GroupAdmin {
 
     protected MeasureReport.MeasureReportGroupStratifierComponent createNullStratifier() {
         MeasureReport.MeasureReportGroupStratifierComponent stratifierComponent = createStratifier("diagnosis");
-        stratifierComponent.addStratum(MeasureReportUtils.createStratum("null", 0));
+        stratifierComponent.addStratum(createStratum("null", 0));
 
         return  stratifierComponent;
     }
@@ -100,9 +99,50 @@ public abstract class GroupAdmin {
         return  stratifierComponent;
     }
 
+    /**
+     * Create a stratum with the given name and the given stratifier population count.
+     *
+     * @param code The name to give to the stratum.
+     * @param count Population count.
+     * @return New stratum.
+     */
+    protected MeasureReport.StratifierGroupComponent createStratum(String code, int count) {
+        MeasureReport.StratifierGroupComponent stratum = new MeasureReport.StratifierGroupComponent();
+        stratum.setValue(createTextCodeableConcept(code));
+        stratum.addPopulation(createStratifierPopulation(count));
+
+        return stratum;
+    }
+
+    /**
+     * Create a text-codeable-concept with the given text.
+     * @param text Text of concept.
+     * @return New Codeable concept.
+     */
+    protected  CodeableConcept createTextCodeableConcept(String text) {
+        CodeableConcept codeableConcept = new CodeableConcept();
+        codeableConcept.setText(text);
+
+        return codeableConcept;
+    }
+
+    /**
+     * Create a population with the given count.
+     *
+     * @param count Population count.
+     * @return New population.
+     */
+    private MeasureReport.StratifierGroupPopulationComponent createStratifierPopulation(int count) {
+        MeasureReport.StratifierGroupPopulationComponent population = new MeasureReport.StratifierGroupPopulationComponent();
+        population.setCount(count);
+        population.setCode(new CodeableConcept(new Coding("http://terminology.hl7.org/CodeSystem/measure-population", "initial-population", null)));
+
+        return population;
+    }
+
     private List<CodeableConcept> createTextCodeableConceptList(String text) {
         List<CodeableConcept> codeableConceptList = new ArrayList<CodeableConcept>();
-        codeableConceptList.add(MeasureReportUtils.createTextCodeableConcept(text));
+        codeableConceptList.add(createTextCodeableConcept(text));
 
         return codeableConceptList;
     }

@@ -1,6 +1,5 @@
 package de.samply.lens_beacon_service.measurereport.group;
 
-import de.samply.lens_beacon_service.measurereport.MeasureReportUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.MeasureReport;
 
@@ -34,10 +33,10 @@ public class SpecimenGroupAdmin extends GroupAdmin {
             CodeableConcept code = stratifierComponent.getCode().get(0);
             String text = code.getText();
             if (text.equals("sample_kind")) {
-                stratifierComponent.addStratum(MeasureReportUtils.createStratum("blood", bloodCount));
-                stratifierComponent.addStratum(MeasureReportUtils.createStratum("lymph", lymphCount));
-                stratifierComponent.addStratum(MeasureReportUtils.createStratum("blood-plasma", bloodPlasmaCount));
-                stratifierComponent.addStratum(MeasureReportUtils.createStratum("blood-serum", bloodSerumCount));
+                stratifierComponent.addStratum(createStratum("blood", bloodCount));
+                stratifierComponent.addStratum(createStratum("lymph", lymphCount));
+                stratifierComponent.addStratum(createStratum("blood-plasma", bloodPlasmaCount));
+                stratifierComponent.addStratum(createStratum("blood-serum", bloodSerumCount));
                 break;
             }
         }

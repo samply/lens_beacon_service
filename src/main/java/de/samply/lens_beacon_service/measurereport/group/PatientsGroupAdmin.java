@@ -2,7 +2,6 @@ package de.samply.lens_beacon_service.measurereport.group;
 
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.MeasureReport;
-import de.samply.lens_beacon_service.measurereport.MeasureReportUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,7 @@ public class PatientsGroupAdmin extends GroupAdmin {
      * @return The group object.
      */
     public MeasureReport.MeasureReportGroupComponent generate() {
-        group.setCode(MeasureReportUtils.createTextCodeableConcept("patients"));
+        group.setCode(createTextCodeableConcept("patients"));
 
         List<MeasureReport.MeasureReportGroupStratifierComponent> stratifiers = new ArrayList<MeasureReport.MeasureReportGroupStratifierComponent>();
         stratifiers.add(createStratifier("Gender"));
@@ -44,8 +43,8 @@ public class PatientsGroupAdmin extends GroupAdmin {
             CodeableConcept code = stratifierComponent.getCode().get(0);
             String text = code.getText();
             if (text.equals("Gender")) {
-                stratifierComponent.addStratum(MeasureReportUtils.createStratum("female", femaleCount));
-                stratifierComponent.addStratum(MeasureReportUtils.createStratum("male", maleCount));
+                stratifierComponent.addStratum(createStratum("female", femaleCount));
+                stratifierComponent.addStratum(createStratum("male", maleCount));
                 break;
             }
         }
@@ -66,7 +65,7 @@ public class PatientsGroupAdmin extends GroupAdmin {
                 for (String ethnicity: ethnicityCounts.keySet().stream()
                         .sorted((str1, str2) -> str1.length() - str2.length())
                         .collect(Collectors.toList()))
-                    stratifierComponent.addStratum(MeasureReportUtils.createStratum(ethnicity, ethnicityCounts.get(ethnicity)));
+                    stratifierComponent.addStratum(createStratum(ethnicity, ethnicityCounts.get(ethnicity)));
                 break;
             }
         }
@@ -74,7 +73,7 @@ public class PatientsGroupAdmin extends GroupAdmin {
 
     private MeasureReport.MeasureReportGroupStratifierComponent createVitalStatusStratifier() {
         MeasureReport.MeasureReportGroupStratifierComponent stratifierComponent = createStratifier("75186-7");
-        stratifierComponent.addStratum(MeasureReportUtils.createStratum("unbekannt", 0));
+        stratifierComponent.addStratum(createStratum("unbekannt", 0));
 
         return  stratifierComponent;
     }

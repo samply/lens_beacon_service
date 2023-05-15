@@ -1,5 +1,6 @@
-package de.samply.lens_beacon_service.lens;
+package de.samply.lens_beacon_service.convert;
 
+import de.samply.lens_beacon_service.lens.LensAstNode;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.List;
  * This effectively flattens out the hierarchical structure of LensAstNode.
  */
 @Slf4j
-public class LensAstLeafPicker {
+public class AstLeafPicker {
     /**
      * Crawls into the hierarchy of the LensAstNode object, depth first, and adds
      * some of the leaf nodes it finds to a list, which is then returned.

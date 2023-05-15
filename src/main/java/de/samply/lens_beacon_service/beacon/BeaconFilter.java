@@ -33,7 +33,7 @@ public class BeaconFilter extends HashMap<String, String> {
     }
 
     /**
-     * Convert the filter object to a JSON string.
+     * AstNodeListConverter the filter object to a JSON string.
      *
      * @return JSON string.
      */

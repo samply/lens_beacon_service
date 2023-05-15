@@ -1,7 +1,8 @@
-package de.samply.lens_beacon_service.convert;
+package de.samply.lens_beacon_service.convert.individuals;
 
 import de.samply.lens_beacon_service.Utils;
 import de.samply.lens_beacon_service.beacon.BeaconFilter;
+import de.samply.lens_beacon_service.convert.AstNodeConverter;
 import de.samply.lens_beacon_service.lens.LensAstNode;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  * Convert the Lens AST representation of ethnicity into a corresponding Beacon filter.
  */
 
-public class EthnicityConverter implements Converter {
+public class AstNodeConverterEthnicity implements AstNodeConverter {
     @Override
     public BeaconFilter convert(LensAstNode lensAstNode) {
         String ethnicity = Utils.getEthnicityNameNcit().get(((List) lensAstNode.value).get(0));

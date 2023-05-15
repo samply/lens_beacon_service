@@ -3,10 +3,10 @@ package de.samply.lens_beacon_service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.samply.lens_beacon_service.beacon.*;
-import de.samply.lens_beacon_service.convert.ConvertBiosamples;
-import de.samply.lens_beacon_service.convert.ConvertGenetics;
-import de.samply.lens_beacon_service.convert.ConvertIndividuals;
-import de.samply.lens_beacon_service.lens.LensAstLeafPicker;
+import de.samply.lens_beacon_service.convert.biosamples.AstNodeListConverterBiosamples;
+import de.samply.lens_beacon_service.convert.genetics.AstNodeListConverterGenetics;
+import de.samply.lens_beacon_service.convert.individuals.AstNodeListConverterIndividuals;
+import de.samply.lens_beacon_service.convert.AstLeafPicker;
 import de.samply.lens_beacon_service.lens.LensAstNode;
 import de.samply.lens_beacon_service.lens.LensResult;
 import de.samply.lens_beacon_service.measurereport.MeasureReportAdmin;
@@ -41,10 +41,10 @@ public class QueryService {
      * @return Serialized results.
      */
     public String runQuery(LensAstNode lensAstNode) {
-        List<LensAstNode> lensAstNodeLeafNodeList = new LensAstLeafPicker().crawl(lensAstNode);
-        List<BeaconFilter> beaconFiltersIndividuals = new ConvertIndividuals().convert(lensAstNodeLeafNodeList);
-        List<BeaconFilter> beaconFiltersBiosamples = new ConvertBiosamples().convert(lensAstNodeLeafNodeList);
-        List<BeaconFilter> beaconFiltersGenetics = new ConvertGenetics().convert(lensAstNodeLeafNodeList);
+        List<LensAstNode> lensAstNodeLeafNodeList = new AstLeafPicker().crawl(lensAstNode);
+        List<BeaconFilter> beaconFiltersIndividuals = new AstNodeListConverterIndividuals().convert(lensAstNodeLeafNodeList);
+        List<BeaconFilter> beaconFiltersBiosamples = new AstNodeListConverterBiosamples().convert(lensAstNodeLeafNodeList);
+        List<BeaconFilter> beaconFiltersGenetics = new AstNodeListConverterGenetics().convert(lensAstNodeLeafNodeList);
 
         try {
             log.info("\nlensAstNode: " + lensAstNode);
@@ -103,7 +103,6 @@ public class QueryService {
         runIndividualsQueryAtSite(site, measureReportAdmin, beaconFiltersIndividuals);
         runBiosamplesQueryAtSite(site, measureReportAdmin, beaconFiltersBiosamples);
         Integer geneticsCount = runBeaconEntryTypeQueryAtSite(site.genomicVariations, site.beaconQueryService, beaconFiltersGenomicVariations);
-//        measureReportAdmin.setGroupPopulationCount("genetics", geneticsCount);
         measureReportAdmin.geneticsGroupAdmin.setCount(geneticsCount);
 
         String jsonMeasure = measureReportAdmin.toString();
@@ -123,7 +122,6 @@ public class QueryService {
                                            MeasureReportAdmin measureReportAdmin,
                                            List<BeaconFilter> beaconFilters) {
         Integer count = runBeaconEntryTypeQueryAtSite(site.individuals, site.beaconQueryService, beaconFilters);
-//        measureReportAdmin.setGroupPopulationCount("patients", count);
         measureReportAdmin.patientsGroupAdmin.setCount(count);
         runIndividualsGenderQueryAtSite(site, measureReportAdmin, beaconFilters);
         runIndividualsEthnicityQueryAtSite(site, measureReportAdmin, beaconFilters);
@@ -177,7 +175,6 @@ public class QueryService {
                                            MeasureReportAdmin measureReportAdmin,
                                            List<BeaconFilter> beaconFilters) {
         Integer count = runBeaconEntryTypeQueryAtSite(site.biosamples, site.beaconQueryService, beaconFilters);
-//        measureReportAdmin.setGroupPopulationCount("specimen", count);
         measureReportAdmin.specimenGroupAdmin.setCount(count);
         runBiosamplesTypeQueryAtSite(site, measureReportAdmin, beaconFilters);
     }

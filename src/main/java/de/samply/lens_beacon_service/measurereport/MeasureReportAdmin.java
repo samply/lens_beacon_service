@@ -45,7 +45,7 @@ public class MeasureReportAdmin {
     }
 
     /**
-     * Convert the measure report into a JSON-formatted string.
+     * AstNodeListConverter the measure report into a JSON-formatted string.
      *
      * @return JSON-formatted string.
      */

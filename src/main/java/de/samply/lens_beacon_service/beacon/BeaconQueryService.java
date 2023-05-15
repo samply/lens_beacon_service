@@ -79,7 +79,7 @@ public class BeaconQueryService {
         BeaconRequest beaconRequest = new BeaconRequest(new BeaconQuery(beaconFilters));
         String jsonBeaconRequest = "{}";
         try {
-            // Convert the request into JSON, to be sent in the body.
+            // AstNodeListConverter the request into JSON, to be sent in the body.
             jsonBeaconRequest = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(beaconRequest);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

@@ -1,6 +1,7 @@
-package de.samply.lens_beacon_service.convert;
+package de.samply.lens_beacon_service.convert.genetics;
 
 import de.samply.lens_beacon_service.beacon.BeaconFilter;
+import de.samply.lens_beacon_service.convert.AstNodeListConverter;
 import de.samply.lens_beacon_service.lens.LensAstNode;
 import lombok.extern.slf4j.Slf4j;
 
@@ -9,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 
 @Slf4j
-public class ConvertGenetics extends Convert {
+public class AstNodeListConverterGenetics extends AstNodeListConverter {
     @Override
     public BeaconFilter convert(LensAstNode lensAstNode) {
         BeaconFilter beaconFilter = null;
@@ -17,7 +18,7 @@ public class ConvertGenetics extends Convert {
             // Choose the relevant converter for this LensAstNode.
             switch (lensAstNode.key) {
                 case "genomic_variation":
-                    beaconFilter = new GeneticVariationConverter().convert(lensAstNode);
+                    beaconFilter = new AstNodeConverterGeneticVariation().convert(lensAstNode);
                     break;
             }
 

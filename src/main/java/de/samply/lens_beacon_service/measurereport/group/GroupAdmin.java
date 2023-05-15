@@ -20,24 +20,52 @@ import java.util.List;
  * I had to use a generator class rather than subclassing from MeasureReportGroupComponent
  * because JSON generation breaks if you use subclasses.
  */
-public abstract class GroupGenerator {
+public abstract class GroupAdmin {
     protected MeasureReport.MeasureReportGroupComponent group;
 
-    public GroupGenerator() {
+    public GroupAdmin() {
         group = new MeasureReport.MeasureReportGroupComponent();
         group.setPopulation(createPopulations(-1));
     }
 
     /**
-     * Generate a new MeasureReportGroupComponent object.
-     * @return
+     * Generate group with all counts set to default initial values.
+     *
+     * @return The group object.
      */
     public abstract MeasureReport.MeasureReportGroupComponent generate();
 
+
+    /**
+     * Set the total population for this group.
+     *
+     * @param count Patient count.
+     */
+    public void setCount(int count) {
+        List<MeasureReport.MeasureReportGroupPopulationComponent> populations = group.getPopulation();
+        if (populations == null || populations.size() == 0)
+            return;
+        // Set the population count in the first population in this group.
+        populations.get(0).setCount(count);
+    }
+
+    /**
+     * Generate a group with the given name.
+     *
+     * @param groupName Name of this group.
+     * @return
+     */
     protected  MeasureReport.MeasureReportGroupComponent generate(String groupName) {
         return generate(groupName, null);
     }
 
+    /**
+     * Generate a group with the given name and with a single named stratifier.
+     *
+     * @param groupName Name of this group.
+     * @param stratifierName If null, insert an empty stratifier.
+     * @return
+     */
     protected  MeasureReport.MeasureReportGroupComponent generate(String groupName, String stratifierName) {
         group.setCode(MeasureReportUtils.createTextCodeableConcept(groupName));
 

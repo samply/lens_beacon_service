@@ -9,7 +9,7 @@ import de.samply.lens_beacon_service.convert.ConvertIndividuals;
 import de.samply.lens_beacon_service.lens.LensAstLeafPicker;
 import de.samply.lens_beacon_service.lens.LensAstNode;
 import de.samply.lens_beacon_service.lens.LensResult;
-import de.samply.lens_beacon_service.measurereport.MeasureReportGenerator;
+import de.samply.lens_beacon_service.measurereport.MeasureReportAdmin;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.PrintWriter;
@@ -98,111 +98,106 @@ public class QueryService {
                                   List<BeaconFilter> beaconFiltersIndividuals,
                                   List<BeaconFilter> beaconFiltersBiosamples,
                                   List<BeaconFilter> beaconFiltersGenomicVariations) {
-        MeasureReportGenerator measureReportGenerator = new MeasureReportGenerator();
+        MeasureReportAdmin measureReportAdmin = new MeasureReportAdmin();
 
-        runIndividualsQueryAtSite(site, measureReportGenerator, beaconFiltersIndividuals);
-        runBiosamplesQueryAtSite(site, measureReportGenerator, beaconFiltersBiosamples);
+        runIndividualsQueryAtSite(site, measureReportAdmin, beaconFiltersIndividuals);
+        runBiosamplesQueryAtSite(site, measureReportAdmin, beaconFiltersBiosamples);
         Integer geneticsCount = runBeaconEntryTypeQueryAtSite(site.genomicVariations, site.beaconQueryService, beaconFiltersGenomicVariations);
-        measureReportGenerator.setGroupPopulationCount("genetics", geneticsCount);
+//        measureReportAdmin.setGroupPopulationCount("genetics", geneticsCount);
+        measureReportAdmin.geneticsGroupAdmin.setCount(geneticsCount);
 
-        String jsonMeasure = measureReportGenerator.toString();
+        String jsonMeasure = measureReportAdmin.toString();
         return jsonMeasure;
     }
 
     /**
      * Run a query on the individuals endpoint at a given Beacon site, using the supplied filters.
      *
-     * The measureReportGenerator will be used to store the results of the query.
+     * The measureReportAdmin will be used to store the results of the query.
      *
      * @param site
-     * @param measureReportGenerator
+     * @param measureReportAdmin
      * @param beaconFilters
      */
     private void runIndividualsQueryAtSite(BeaconSite site,
-                                           MeasureReportGenerator measureReportGenerator,
+                                           MeasureReportAdmin measureReportAdmin,
                                            List<BeaconFilter> beaconFilters) {
-        BeaconEntryType beaconEntryType = site.individuals;
-        Integer count = runBeaconEntryTypeQueryAtSite(beaconEntryType, site.beaconQueryService, beaconFilters);
-        measureReportGenerator.setGroupPopulationCount("patients", count);
-        runIndividualsGenderQueryAtSite(site, measureReportGenerator, beaconFilters);
-        runIndividualsEthnicityQueryAtSite(site, measureReportGenerator, beaconFilters);
+        Integer count = runBeaconEntryTypeQueryAtSite(site.individuals, site.beaconQueryService, beaconFilters);
+//        measureReportAdmin.setGroupPopulationCount("patients", count);
+        measureReportAdmin.patientsGroupAdmin.setCount(count);
+        runIndividualsGenderQueryAtSite(site, measureReportAdmin, beaconFilters);
+        runIndividualsEthnicityQueryAtSite(site, measureReportAdmin, beaconFilters);
     }
 
     /**
      * Runs the query for the gender stratifier.
      *
      * @param site
-     * @param measureReportGenerator
+     * @param measureReportAdmin
      * @param beaconFilters
      */
     private void runIndividualsGenderQueryAtSite(BeaconSite site,
-                                                 MeasureReportGenerator measureReportGenerator,
+                                                 MeasureReportAdmin measureReportAdmin,
                                                  List<BeaconFilter> beaconFilters) {
-        BeaconEntryType beaconEntryType = site.individuals;
+        Integer femaleCount = runFilterQueryAtSite(site.individuals, site.beaconQueryService, beaconFilters, "id", "NCIT:C16576");
+        Integer maleCount = runFilterQueryAtSite(site.individuals, site.beaconQueryService, beaconFilters, "id", "NCIT:C20197");
 
-        Integer femaleCount = runFilterQueryAtSite(beaconEntryType, site.beaconQueryService, beaconFilters, "id", "NCIT:C16576");
-        Integer maleCount = runFilterQueryAtSite(beaconEntryType, site.beaconQueryService, beaconFilters, "id", "NCIT:C20197");
-
-        measureReportGenerator.setPatientGenderCounts((femaleCount>=0)?femaleCount:0, (maleCount>=0)?maleCount:0);
+        measureReportAdmin.patientsGroupAdmin.setGenderCounts((femaleCount>=0)?femaleCount:0, (maleCount>=0)?maleCount:0);
     }
 
     /**
      * Runs the query for the ethnicity stratifier.
      *
      * @param site
-     * @param measureReportGenerator
+     * @param measureReportAdmin
      * @param beaconFilters
      */
     private void runIndividualsEthnicityQueryAtSite(BeaconSite site,
-                                                 MeasureReportGenerator measureReportGenerator,
+                                                 MeasureReportAdmin measureReportAdmin,
                                                  List<BeaconFilter> beaconFilters) {
-        BeaconEntryType beaconEntryType = site.individuals;
-
         Map<String, Integer> ethnicityCounts = new HashMap<String, Integer>();
         for (String ethnicity : Utils.getEthnicityNameNcit().keySet()) {
-            Integer count = runFilterQueryAtSite(beaconEntryType, site.beaconQueryService, beaconFilters, "id", Utils.getEthnicityNameNcit().get(ethnicity));
+            Integer count = runFilterQueryAtSite(site.individuals, site.beaconQueryService, beaconFilters, "id", Utils.getEthnicityNameNcit().get(ethnicity));
             log.info(ethnicity + ": " + count);
             ethnicityCounts.put(ethnicity, count);
         }
-        measureReportGenerator.setPatientEthnicityCounts(ethnicityCounts);
+        measureReportAdmin.patientsGroupAdmin.setEthnicityCounts(ethnicityCounts);
     }
 
     /**
      * Run a query on the biosamples endpoint at a given Beacon site, using the supplied filters.
      *
-     * The measureReportGenerator will be used to store the results of the query.
+     * The measureReportAdmin will be used to store the results of the query.
      *
      * @param site
-     * @param measureReportGenerator
+     * @param measureReportAdmin
      * @param beaconFilters
      */
     private void runBiosamplesQueryAtSite(BeaconSite site,
-                                           MeasureReportGenerator measureReportGenerator,
+                                           MeasureReportAdmin measureReportAdmin,
                                            List<BeaconFilter> beaconFilters) {
-        BeaconEntryType beaconEntryType = site.biosamples;
-        Integer count = runBeaconEntryTypeQueryAtSite(beaconEntryType, site.beaconQueryService, beaconFilters);
-        measureReportGenerator.setGroupPopulationCount("specimen", count);
-        runBiosamplesTypeQueryAtSite(site, measureReportGenerator, beaconFilters);
+        Integer count = runBeaconEntryTypeQueryAtSite(site.biosamples, site.beaconQueryService, beaconFilters);
+//        measureReportAdmin.setGroupPopulationCount("specimen", count);
+        measureReportAdmin.specimenGroupAdmin.setCount(count);
+        runBiosamplesTypeQueryAtSite(site, measureReportAdmin, beaconFilters);
     }
 
     /**
      * Runs the query for the sample type stratifier.
      *
      * @param site
-     * @param measureReportGenerator
+     * @param measureReportAdmin
      * @param beaconFilters
      */
     private void runBiosamplesTypeQueryAtSite(BeaconSite site,
-                                                 MeasureReportGenerator measureReportGenerator,
+                                                 MeasureReportAdmin measureReportAdmin,
                                                  List<BeaconFilter> beaconFilters) {
-        BeaconEntryType beaconEntryType = site.biosamples;
+        Integer bloodCount = runFilterQueryAtSite(site.biosamples, site.beaconQueryService, beaconFilters, "id", "UBERON:0000178");
+        Integer bloodSerumCount = runFilterQueryAtSite(site.biosamples, site.beaconQueryService, beaconFilters, "id", "UBERON:0001977");
+        Integer bloodPlasmaCount = runFilterQueryAtSite(site.biosamples, site.beaconQueryService, beaconFilters, "id", "UBERON:0001969");
+        Integer lymphCount = runFilterQueryAtSite(site.biosamples, site.beaconQueryService, beaconFilters, "id", "UBERON:0002391");
 
-        Integer bloodCount = runFilterQueryAtSite(beaconEntryType, site.beaconQueryService, beaconFilters, "id", "UBERON:0000178");
-        Integer bloodSerumCount = runFilterQueryAtSite(beaconEntryType, site.beaconQueryService, beaconFilters, "id", "UBERON:0001977");
-        Integer bloodPlasmaCount = runFilterQueryAtSite(beaconEntryType, site.beaconQueryService, beaconFilters, "id", "UBERON:0001969");
-        Integer lymphCount = runFilterQueryAtSite(beaconEntryType, site.beaconQueryService, beaconFilters, "id", "UBERON:0002391");
-
-        measureReportGenerator.setSpecimenTypeCounts((bloodCount>=0)?bloodCount:0,
+        measureReportAdmin.specimenGroupAdmin.setTypeCounts((bloodCount>=0)?bloodCount:0,
                 (bloodSerumCount>=0)?bloodSerumCount:0,
                 (bloodPlasmaCount>=0)?bloodPlasmaCount:0,
                 (lymphCount>=0)?lymphCount:0);

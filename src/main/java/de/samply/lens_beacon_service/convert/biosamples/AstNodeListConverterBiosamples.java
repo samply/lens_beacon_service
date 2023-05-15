@@ -2,21 +2,21 @@ package de.samply.lens_beacon_service.convert.biosamples;
 
 import de.samply.lens_beacon_service.beacon.BeaconFilter;
 import de.samply.lens_beacon_service.convert.AstNodeListConverter;
-import de.samply.lens_beacon_service.lens.LensAstNode;
+import de.samply.lens_beacon_service.lens.AstNode;
 
 /**
- * Convert a list of LensAstNode leaf elements into a list of Beacon filters for biosamples.
+ * Convert a list of AstNode leaf elements into a list of Beacon filters for biosamples.
  */
 
 public class AstNodeListConverterBiosamples extends AstNodeListConverter {
     @Override
-    public BeaconFilter convert(LensAstNode lensAstNode) {
+    public BeaconFilter convert(AstNode astNode) {
         BeaconFilter beaconFilter = null;
-        if (lensAstNode.key != null)
-            // Choose the relevant converter for this LensAstNode.
-            switch (lensAstNode.key) {
+        if (astNode.key != null)
+            // Choose the relevant converter for this AstNode.
+            switch (astNode.key) {
                 case "sample_kind":
-                    beaconFilter = new AstNodeConverterSampleType().convert(lensAstNode);
+                    beaconFilter = new AstNodeConverterSampleType().convert(astNode);
                     break;
             }
 

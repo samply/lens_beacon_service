@@ -2,7 +2,7 @@ package de.samply.lens_beacon_service.convert.biosamples;
 
 import de.samply.lens_beacon_service.beacon.BeaconFilter;
 import de.samply.lens_beacon_service.convert.AstNodeConverter;
-import de.samply.lens_beacon_service.lens.LensAstNode;
+import de.samply.lens_beacon_service.lens.AstNode;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -14,14 +14,14 @@ import java.util.List;
 @Slf4j
 public class AstNodeConverterSampleType implements AstNodeConverter {
     @Override
-    public BeaconFilter convert(LensAstNode lensAstNode) {
-        if (((List) lensAstNode.value).get(0).equals("blood"))
+    public BeaconFilter convert(AstNode astNode) {
+        if (((List) astNode.value).get(0).equals("blood"))
             return new BeaconFilter("id", "UBERON:0000178");
-        if (((List) lensAstNode.value).get(0).equals("blood-serum"))
+        if (((List) astNode.value).get(0).equals("blood-serum"))
             return new BeaconFilter("id", "UBERON:0001977");
-        if (((List) lensAstNode.value).get(0).equals("blood-plasma"))
+        if (((List) astNode.value).get(0).equals("blood-plasma"))
             return new BeaconFilter("id", "UBERON:0001969");
-        if (((List) lensAstNode.value).get(0).equals("lymph"))
+        if (((List) astNode.value).get(0).equals("lymph"))
             return new BeaconFilter("id", "UBERON:0002391");
         return null;
     }

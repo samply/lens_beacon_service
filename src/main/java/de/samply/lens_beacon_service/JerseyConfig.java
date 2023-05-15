@@ -1,6 +1,6 @@
 package de.samply.lens_beacon_service;
 
-import de.samply.lens_beacon_service.lens.LensApi;
+import de.samply.lens_beacon_service.lens.Api;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +11,6 @@ https://stackoverflow.com/questions/72430298/jax-rs-annotation-path-is-not-work-
 @Component
 public class JerseyConfig extends ResourceConfig {
     public JerseyConfig(){
-        register(LensApi.class);
+        register(Api.class);
     }
 }

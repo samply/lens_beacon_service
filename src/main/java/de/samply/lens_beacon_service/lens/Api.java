@@ -18,13 +18,14 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
 /**
- * An API that talks directly with a Lens GUI instance. It takes queries in the
- * AST (tree) format, executes them, and returns results.
+ * An API that talks directly with a Lens GUI instance or anything else that can generate queries in the
+ * AST (tree) format. It executes the queries, and returns results based around serialized FHIR measure
+ * reports.
  */
 
 @Path("/query")
 @Slf4j
-public class LensApi {
+public class Api {
   @Context
   private UriInfo uriInfo;
 
@@ -33,10 +34,10 @@ public class LensApi {
   /**
    * Converts the incoming AST query into a form that Beacon understands,
    * runs the query against one or more Beacon sites and returns a serialized
-   * list of LensResult objects, one per Beacon site.
+   * list of SiteResult objects, one per Beacon site.
    *
-   * @param lensAstNode query, in AST format.
-   * @return Serialized list of LensResult objects.
+   * @param astNode query, in AST format.
+   * @return Serialized list of SiteResult objects.
    */
   @POST
   @Path("/ast")
@@ -50,16 +51,16 @@ public class LensApi {
       @Parameter(
           name = "queryContainer",
           description = "Structured query and the target as a query container object.",
-          schema = @Schema(implementation = LensAstNode.class))
-      LensAstNode lensAstNode) {
+          schema = @Schema(implementation = AstNode.class))
+      AstNode astNode) {
     log.info("postAstQuery: entered");
-    if (lensAstNode == null) {
+    if (astNode == null) {
       return Response.status(BAD_REQUEST)
           .entity("Missing payload. Expected a query container encoded in JSON.")
           .build();
     }
     try {
-      String jsonResult = queryService.runQuery(lensAstNode);
+      String jsonResult = queryService.runQuery(astNode);
 
       return addCorsHeaders(Response.ok(jsonResult)).header("Access-Control-Expose-Headers", "Location").build();
     } catch (Exception e) {

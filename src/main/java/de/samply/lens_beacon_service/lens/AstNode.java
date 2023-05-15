@@ -13,9 +13,9 @@ import java.util.List;
  */
 
 @Slf4j
-public class LensAstNode implements Cloneable {
+public class AstNode implements Cloneable {
     public String operand;
-    public List<LensAstNode> children;
+    public List<AstNode> children;
     public String key;
     public String en;
     public String de;

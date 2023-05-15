@@ -2,24 +2,24 @@ package de.samply.lens_beacon_service.convert.individuals;
 
 import de.samply.lens_beacon_service.beacon.BeaconFilter;
 import de.samply.lens_beacon_service.convert.AstNodeListConverter;
-import de.samply.lens_beacon_service.lens.LensAstNode;
+import de.samply.lens_beacon_service.lens.AstNode;
 
 /**
- * Convert a list of LensAstNode leaf elements into a list of Beacon filters for individuals.
+ * Convert a list of AstNode leaf elements into a list of Beacon filters for individuals.
  */
 
 public class AstNodeListConverterIndividuals extends AstNodeListConverter {
     @Override
-    public BeaconFilter convert(LensAstNode lensAstNode) {
+    public BeaconFilter convert(AstNode astNode) {
         BeaconFilter beaconFilter = null;
-        if (lensAstNode.key != null)
-            // Choose the relevant converter for this LensAstNode.
-            switch (lensAstNode.key) {
+        if (astNode.key != null)
+            // Choose the relevant converter for this AstNode.
+            switch (astNode.key) {
                 case "gender":
-                    beaconFilter = new AstNodeConverterSex().convert(lensAstNode);
+                    beaconFilter = new AstNodeConverterSex().convert(astNode);
                     break;
                 case "ethnicity":
-                    beaconFilter = new AstNodeConverterEthnicity().convert(lensAstNode);
+                    beaconFilter = new AstNodeConverterEthnicity().convert(astNode);
                     break;
             }
 

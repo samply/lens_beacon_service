@@ -7,8 +7,8 @@ import de.samply.lens_beacon_service.convert.biosamples.AstNodeListConverterBios
 import de.samply.lens_beacon_service.convert.genetics.AstNodeListConverterGenetics;
 import de.samply.lens_beacon_service.convert.individuals.AstNodeListConverterIndividuals;
 import de.samply.lens_beacon_service.convert.AstLeafPicker;
-import de.samply.lens_beacon_service.lens.LensAstNode;
-import de.samply.lens_beacon_service.lens.LensResult;
+import de.samply.lens_beacon_service.lens.AstNode;
+import de.samply.lens_beacon_service.lens.SiteResult;
 import de.samply.lens_beacon_service.measurereport.MeasureReportAdmin;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,34 +37,34 @@ public class QueryService {
      * The query will be translated into a Beacon-friendly form and then run at each Beacon
      * site.
      *
-     * @param lensAstNode AST query.
+     * @param astNode AST query.
      * @return Serialized results.
      */
-    public String runQuery(LensAstNode lensAstNode) {
-        List<LensAstNode> lensAstNodeLeafNodeList = new AstLeafPicker().crawl(lensAstNode);
-        List<BeaconFilter> beaconFiltersIndividuals = new AstNodeListConverterIndividuals().convert(lensAstNodeLeafNodeList);
-        List<BeaconFilter> beaconFiltersBiosamples = new AstNodeListConverterBiosamples().convert(lensAstNodeLeafNodeList);
-        List<BeaconFilter> beaconFiltersGenetics = new AstNodeListConverterGenetics().convert(lensAstNodeLeafNodeList);
+    public String runQuery(AstNode astNode) {
+        List<AstNode> astNodeLeafNodeList = new AstLeafPicker().crawl(astNode);
+        List<BeaconFilter> beaconFiltersIndividuals = new AstNodeListConverterIndividuals().convert(astNodeLeafNodeList);
+        List<BeaconFilter> beaconFiltersBiosamples = new AstNodeListConverterBiosamples().convert(astNodeLeafNodeList);
+        List<BeaconFilter> beaconFiltersGenetics = new AstNodeListConverterGenetics().convert(astNodeLeafNodeList);
 
         try {
-            log.info("\nlensAstNode: " + lensAstNode);
-            log.info("\njsonLensQueryLeafNodeList: " + new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(lensAstNodeLeafNodeList));
+            log.info("\nastNode: " + astNode);
+            log.info("\njsonLensQueryLeafNodeList: " + new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(astNodeLeafNodeList));
             log.info("\nbeaconFiltersIndividuals: " + new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(beaconFiltersIndividuals));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
 
-        List<LensResult> lensResults = new ArrayList<LensResult>();
+        List<SiteResult> siteResults = new ArrayList<SiteResult>();
         for (BeaconSite site: BeaconSites.getSites()) {
             String siteName = site.name;
             String siteUrl = site.url;
-            LensResult lensResult = new LensResult(siteName, siteUrl, "PLACEHOLDER" + siteName);
-            lensResults.add(lensResult);
+            SiteResult siteResult = new SiteResult(siteName, siteUrl, "PLACEHOLDER" + siteName);
+            siteResults.add(siteResult);
         }
 
         String jsonResults = "";
         try {
-            jsonResults = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(lensResults);
+            jsonResults = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(siteResults);
         } catch (JsonProcessingException e) {
             log.error("An error occurred while converting an object into JSON");
             e.printStackTrace();

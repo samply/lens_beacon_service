@@ -2,7 +2,7 @@ package de.samply.lens_beacon_service.convert.genetics;
 
 import de.samply.lens_beacon_service.beacon.BeaconFilter;
 import de.samply.lens_beacon_service.convert.AstNodeConverter;
-import de.samply.lens_beacon_service.lens.LensAstNode;
+import de.samply.lens_beacon_service.lens.AstNode;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -12,8 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AstNodeConverterGeneticVariation implements AstNodeConverter {
     @Override
-    public BeaconFilter convert(LensAstNode lensAstNode) {
-        String geneticVariation = (String) lensAstNode.value;
+    public BeaconFilter convert(AstNode astNode) {
+        String geneticVariation = (String) astNode.value;
         // Remove non-ASCII stuff from filter term, because Beacon does not
         // like it. Also prepend an identifier type, because Beacon wants this.
         geneticVariation = geneticVariation.replace(":", "");

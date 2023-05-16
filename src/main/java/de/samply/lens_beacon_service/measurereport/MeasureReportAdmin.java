@@ -2,7 +2,6 @@ package de.samply.lens_beacon_service.measurereport;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
-import de.samply.lens_beacon_service.measurereport.group.DiagnosisGroupAdmin;
 import de.samply.lens_beacon_service.measurereport.group.GeneticsGroupAdmin;
 import de.samply.lens_beacon_service.measurereport.group.PatientsGroupAdmin;
 import de.samply.lens_beacon_service.measurereport.group.SpecimenGroupAdmin;
@@ -23,11 +22,9 @@ import java.util.UUID;
  *
  */
 @Slf4j
-//public class MeasureReportAdmin extends MeasureReport {
 public class MeasureReportAdmin {
     private MeasureReport measureReport = new MeasureReport();
     public PatientsGroupAdmin patientsGroupAdmin = new PatientsGroupAdmin();
-    public DiagnosisGroupAdmin diagnosisGroupAdmin = new DiagnosisGroupAdmin();
     public SpecimenGroupAdmin specimenGroupAdmin = new SpecimenGroupAdmin();
     public GeneticsGroupAdmin geneticsGroupAdmin = new GeneticsGroupAdmin();
 
@@ -39,7 +36,6 @@ public class MeasureReportAdmin {
         measureReport.addExtension(createExtension());
         measureReport.setPeriod(createPeriod());
         measureReport.addGroup(patientsGroupAdmin.generate());
-        measureReport.addGroup(diagnosisGroupAdmin.generate());
         measureReport.addGroup(specimenGroupAdmin.generate());
         measureReport.addGroup(geneticsGroupAdmin.generate());
     }

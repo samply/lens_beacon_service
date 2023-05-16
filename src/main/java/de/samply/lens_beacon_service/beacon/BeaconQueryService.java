@@ -48,7 +48,7 @@ public class BeaconQueryService {
      * Takes the supplied filter set, and adds an extra filter based on filterName and filterValue.
      * Runs a query constrained by this expanded filter set.
      *
-     * The original filter set (beaconFilters) is not modified, i.e. this method has no sideeffects.
+     * The original filter set (beaconEntryType.baseFilters) is not modified, i.e. this method has no sideeffects.
      *
      * @param beaconEntryType
      * @param filterName
@@ -102,7 +102,7 @@ public class BeaconQueryService {
      * @param filters
      * @return
      */
-    public BeaconResponse query(BeaconEntryType entryType, List<BeaconFilter> filters) {
+    private BeaconResponse query(BeaconEntryType entryType, List<BeaconFilter> filters) {
         if (entryType == null)
             return null;
         if (entryType.method.equals("POST"))

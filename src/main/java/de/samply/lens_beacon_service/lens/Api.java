@@ -1,6 +1,6 @@
 package de.samply.lens_beacon_service.lens;
 
-import de.samply.lens_beacon_service.QueryService;
+import de.samply.lens_beacon_service.query.QueryService;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;

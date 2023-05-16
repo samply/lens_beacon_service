@@ -1,7 +1,5 @@
 package de.samply.lens_beacon_service.beacon;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -25,26 +23,41 @@ import java.util.List;
 @Slf4j
 public class BeaconQueryService {
     private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(30);
+    private BeaconQuery query; // BeaconQuery without filters.
 
-    private WebClient webClient;
-    private String siteUrl;
+    private WebClient webClient; // Talks directly to site.
+    private String siteUrl; // URL of Beacon 2 site.
 
     /**
-     * The constructor will set up the web client for the Beacon API, with a hard-coded
-     * URL.
+     * Set up Beacon querying service.
+     *
+     * @param siteUrl URL of Beacon 2 site.
+     * @param query Query object that will be converted to JSON and sent to the site. Filters will be
+     *              added to a clone of this object as necessary by the postQuery method.
      */
-    public BeaconQueryService(String siteUrl) {
+    public BeaconQueryService(String siteUrl, BeaconQuery query) {
         this.siteUrl = siteUrl;
+        this.query = query;
         this.webClient = WebClient.builder().baseUrl(siteUrl).build();
     }
 
-    public BeaconResponse queryEntry(BeaconEntryType entryType, List<BeaconFilter> filters) {
+    /**
+     * Run a query against a Beacon endpoint. If the entry type specifies POST, then the supplied
+     * filters will also be applied. Otherwise, a GET request will be assumed. In this latter case,
+     * no filtering will be applied, because Beacon GET endpoints don't accept filters in their
+     * bodies.
+     *
+     * @param entryType
+     * @param filters
+     * @return
+     */
+    public BeaconResponse query(BeaconEntryType entryType, List<BeaconFilter> filters) {
         if (entryType == null)
             return null;
         if (entryType.method.equals("POST"))
-            return postObjectsOfType(entryType.uri, filters);
+            return postQuery(entryType.uri, filters);
         else
-            return getObjectsOfType(entryType.uri);
+            return getQuery(entryType.uri);
     }
 
     /**
@@ -55,7 +68,7 @@ public class BeaconQueryService {
      * @param uri The URI of the objects be queried, e.g. "individuals" or "biosamples".
      * @return JSON-format list of objects of a given type.
      */
-    private BeaconResponse getObjectsOfType(String uri) {
+    private BeaconResponse getQuery(String uri) {
         log.info("\nGET Full URL: " + siteUrl + uri);
 
         return webClient
@@ -75,16 +88,8 @@ public class BeaconQueryService {
      * @param beaconFilters Filters that will be applied to the query.
      * @return JSON-format list of objects of a given type.
      */
-    private BeaconResponse postObjectsOfType(String uri, List<BeaconFilter> beaconFilters) {
-        BeaconRequest beaconRequest = new BeaconRequest(new BeaconQuery(beaconFilters));
-        String jsonBeaconRequest = "{}";
-        try {
-            // AstNodeListConverter the request into JSON, to be sent in the body.
-            jsonBeaconRequest = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(beaconRequest);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        log.info("\nuri: " + uri);
+    private BeaconResponse postQuery(String uri, List<BeaconFilter> beaconFilters) {
+        String jsonBeaconRequest = (new BeaconRequest(query.clone(beaconFilters))).toString();
         log.info("\njsonBeaconRequest: " + jsonBeaconRequest);
         log.info("\nPOST Full URL: " + siteUrl + uri);
 

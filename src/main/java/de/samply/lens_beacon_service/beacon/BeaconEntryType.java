@@ -1,7 +1,7 @@
 package de.samply.lens_beacon_service.beacon;
 
 /**
- * Encapsulates the information needed to access an entry type endpoint.
+ * Encapsulates the information needed to access an entry-type/endpoint.
  *
  * * uri:    E.g. "/individuals/"
  * * method: POST or GET are allowed.

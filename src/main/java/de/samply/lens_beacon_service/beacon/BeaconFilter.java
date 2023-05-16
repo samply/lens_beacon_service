@@ -7,8 +7,17 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
 
 /**
- * Specify a single Beacon filter. A filter may have multiple terms, which can ba
- * added using the addFilterTerm() method.
+ * Specify a single Beacon filter. A filter may have multiple terms, which can be
+ * added using the addFilterTerm() method. E.g. for the filter:
+ * {
+ *     id: ABCDE,
+ *     label: SampleType
+ * }
+ *
+ * do:
+ *
+ * addFilterTerm("id", "ABCDE");
+ * addFilterTerm("label", "SampleType");
  */
 
 @Slf4j
@@ -33,7 +42,7 @@ public class BeaconFilter extends HashMap<String, String> {
     }
 
     /**
-     * AstNodeListConverter the filter object to a JSON string.
+     * Convert the filter object to a JSON string.
      *
      * @return JSON string.
      */

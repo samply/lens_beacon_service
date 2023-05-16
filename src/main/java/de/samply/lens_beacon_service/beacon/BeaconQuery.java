@@ -3,27 +3,29 @@ package de.samply.lens_beacon_service.beacon;
 import java.util.List;
 
 /**
- * Used to generate objects representing a Beacon query.
+ * Class representing a Beacon query.
  *
- * Most of these things can be hard-coded, but the filters need to be specified on the fly.
+ * Most of these parameters are hard-coded, but the filters need to be specified on the fly.
  */
 
-public class BeaconQuery {
+public class BeaconQuery implements Cloneable {
     /**
-     * Constructor that allows you to supply a list of filters.
+     * Create a clone of the object, with the supplied filters.
      *
-     * @param filters A list of Beacon filters.
+     * @param filters
+     * @return
      */
-    public BeaconQuery(List<BeaconFilter> filters) {
-        this.filters = filters;
+    protected BeaconQuery clone(List<BeaconFilter> filters) {
+        try {
+            BeaconQuery clonedBeaconQuery = (BeaconQuery) super.clone();
+            clonedBeaconQuery.filters = filters;
+            return clonedBeaconQuery;
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
     }
 
     public List<BeaconFilter> filters;
     public String includeResultsetResponses = "HIT";
     public boolean testMode = false;
-
-    // Different versions of Beacon use different key names for specifying
-    // the request granularity (boolean, count or detail).
-    //public String requestedGranularity = "count";
-    public String requestGranularity = "COUNT";
 }

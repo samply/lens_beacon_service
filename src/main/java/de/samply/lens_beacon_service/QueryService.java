@@ -3,17 +3,15 @@ package de.samply.lens_beacon_service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.samply.lens_beacon_service.beacon.*;
+import de.samply.lens_beacon_service.convert.AstLeafPicker;
 import de.samply.lens_beacon_service.convert.biosamples.AstNodeListConverterBiosamples;
 import de.samply.lens_beacon_service.convert.genetics.AstNodeListConverterGenetics;
 import de.samply.lens_beacon_service.convert.individuals.AstNodeListConverterIndividuals;
-import de.samply.lens_beacon_service.convert.AstLeafPicker;
 import de.samply.lens_beacon_service.lens.AstNode;
 import de.samply.lens_beacon_service.lens.SiteResult;
 import de.samply.lens_beacon_service.measurereport.MeasureReportAdmin;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -231,7 +229,9 @@ public class QueryService {
      *
      * The supplied filters will be used to constrain the query.
      *
-     * Returns a count of the number of matching hits.
+     * Returns a count of the number of matching hits. If no count can be found, return -1.
+     * Possible reasons for this are that the site does not present the endpoint for the
+     * entry type or an error has occurred.
      *
      * @param beaconEntryType
      * @param beaconQueryService
@@ -243,43 +243,12 @@ public class QueryService {
                                            List<BeaconFilter> beaconFilters) {
         Integer count = -1;
         try {
-            BeaconResponse response = beaconQueryService.queryEntry(beaconEntryType, beaconFilters);
-            count = extractCountFromBeaconResponse(response);
+            BeaconResponse response = beaconQueryService.query(beaconEntryType, beaconFilters);
+            if (response != null)
+                count = response.getCount();
         } catch (Exception e) {
-            log.error("runQuery: problem with " + beaconEntryType.getEntryType() + ", trace: " + traceFromException(e));
+            log.error("runQuery: problem with " + beaconEntryType.getEntryType() + ", trace: " + Utils.traceFromException(e));
         }
         return count;
-    }
-
-    /**
-     * Get a printable stack trace from an Exception object.
-     * @param e
-     * @return
-     */
-    private String traceFromException(Exception e) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        return sw.toString();
-    }
-
-    private Integer extractCountFromBeaconResponse(BeaconResponse response) {
-        // If there is no response, return -1 (unknown)
-        if (response == null || response.responseSummary == null)
-            return -1;
-        // If there is no results count but "exists" is true, return 1.
-        // Rationale: if results exist, then there must be at least one.
-        if (!response.responseSummary.containsKey("numTotalResults") &&
-                response.responseSummary.containsKey("exists")) {
-            if (response.responseSummary.get("exists").toString().equals("true")) {
-                log.info("Returning 1");
-                return 1;
-            } else {
-                log.info("Returning 0");
-                return 0;
-            }
-        }
-        // We have a results count, so cast it to Integer and return it.
-        return (Integer) response.responseSummary.get("numTotalResults");
     }
 }

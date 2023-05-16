@@ -28,18 +28,23 @@ public class BeaconSites {
 
         // Site definitions
         BeaconSite hdCineca = new BeaconSite("HD Cineca", "http://beacon:5050/api",
+                new BeaconQueryGranularityLc(),
                 new BeaconEntryType("/individuals/", "POST"), // Error 380 without trailing slash
                 new BeaconEntryType("/biosamples/", "POST"), // Error 380 without trailing slash
                 new BeaconEntryType("/g_variants/", "POST")); // Error 380 without trailing slash
         BeaconSite egaCineca = new BeaconSite("EGA Cineca", "https://ega-archive.org/beacon-apis/cineca",
+                new BeaconQueryGranularityUc(),
                 individuals, biosamples, genomicVariations);
         BeaconSite molgenisMutations = new BeaconSite("Molgenis mutations", "https://mutatiedatabases.molgeniscloud.org/api/beacon",
+                new BeaconQueryGranularityUc(),
                 individuals,
                 new BeaconEntryType("/biosamples", "GET"), // Uses GET, deviates from Beacon 2 standard
                 new BeaconEntryType("/g_variants", "GET")); // Uses GET, deviates from Beacon 2 standard
         BeaconSite rdcPlayground = new BeaconSite("RDConnect playground", "https://playground.rd-connect.eu/beacon2/api",
+                new BeaconQueryGranularityUc(),
                 individuals, biosamples, null);
         BeaconSite progenetix = new BeaconSite("Progenetix", "https://progenetix.org/beacon",
+                new BeaconQueryGranularityUc(),
                 individuals, biosamples, genomicVariations);
 
         sites.add(hdCineca);

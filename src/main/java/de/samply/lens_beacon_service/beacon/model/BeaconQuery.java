@@ -1,4 +1,4 @@
-package de.samply.lens_beacon_service.beacon;
+package de.samply.lens_beacon_service.beacon.model;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ public class BeaconQuery implements Cloneable {
      * @param filters
      * @return
      */
-    protected BeaconQuery clone(List<BeaconFilter> filters) {
+    public BeaconQuery clone(List<BeaconFilter> filters) {
         try {
             BeaconQuery clonedBeaconQuery = (BeaconQuery) super.clone();
             clonedBeaconQuery.filters = filters;

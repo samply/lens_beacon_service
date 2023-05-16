@@ -1,4 +1,4 @@
-package de.samply.lens_beacon_service.beacon;
+package de.samply.lens_beacon_service.beacon.model;
 
 /**
  * Class representing a Beacon query.

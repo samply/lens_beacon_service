@@ -1,9 +1,12 @@
 package de.samply.lens_beacon_service.beacon;
 
+import de.samply.lens_beacon_service.Utils;
+import de.samply.lens_beacon_service.beacon.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,6 +42,54 @@ public class BeaconQueryService {
         this.siteUrl = siteUrl;
         this.query = query;
         this.webClient = WebClient.builder().baseUrl(siteUrl).build();
+    }
+
+    /**
+     * Takes the supplied filter set, and adds an extra filter based on filterName and filterValue.
+     * Runs a query constrained by this expanded filter set.
+     *
+     * The original filter set (beaconFilters) is not modified, i.e. this method has no sideeffects.
+     *
+     * @param beaconEntryType
+     * @param filterName
+     * @param filterValue
+     * @return
+     */
+    public Integer runFilterQueryAtSite(BeaconEntryType beaconEntryType,
+                                         String filterName,
+                                         String filterValue) {
+        List<BeaconFilter> localFilters = new ArrayList<BeaconFilter>(beaconEntryType.baseFilters); // Clone filters
+        localFilters.add(new BeaconFilter(filterName, filterValue));
+        Integer count = runBeaconEntryTypeQueryAtSite(beaconEntryType, localFilters);
+
+        return count;
+    }
+
+    /**
+     * Runs a Beacon query at the site defined by beaconQueryService, using the endpoint defined
+     * by beaconEntryType.
+     *
+     * The supplied filters will be used to constrain the query.
+     *
+     * Returns a count of the number of matching hits. If no count can be found, return -1.
+     * Possible reasons for this are that the site does not present the endpoint for the
+     * entry type or an error has occurred.
+     *
+     * @param beaconEntryType
+     * @param beaconFilters
+     * @return
+     */
+    public Integer runBeaconEntryTypeQueryAtSite(BeaconEntryType beaconEntryType,
+                                                  List<BeaconFilter> beaconFilters) {
+        Integer count = -1;
+        try {
+            BeaconResponse response = query(beaconEntryType, beaconFilters);
+            if (response != null)
+                count = response.getCount();
+        } catch (Exception e) {
+            log.error("runQuery: problem with " + beaconEntryType.getEntryType() + ", trace: " + Utils.traceFromException(e));
+        }
+        return count;
     }
 
     /**

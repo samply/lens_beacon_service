@@ -1,4 +1,6 @@
-package de.samply.lens_beacon_service.beacon;
+package de.samply.lens_beacon_service.beacon.model;
+
+import de.samply.lens_beacon_service.beacon.BeaconQueryService;
 
 /**
  * Bundles together all the information known about a site hosting a Beacon API.

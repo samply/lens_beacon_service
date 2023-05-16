@@ -1,4 +1,4 @@
-package de.samply.lens_beacon_service.beacon;
+package de.samply.lens_beacon_service.beacon.model;
 
 import java.util.List;
 

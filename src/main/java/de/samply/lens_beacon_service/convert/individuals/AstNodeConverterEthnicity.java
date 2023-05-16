@@ -1,7 +1,7 @@
 package de.samply.lens_beacon_service.convert.individuals;
 
 import de.samply.lens_beacon_service.Utils;
-import de.samply.lens_beacon_service.beacon.BeaconFilter;
+import de.samply.lens_beacon_service.beacon.model.BeaconFilter;
 import de.samply.lens_beacon_service.convert.AstNodeConverter;
 import de.samply.lens_beacon_service.lens.AstNode;
 

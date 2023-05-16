@@ -39,38 +39,46 @@ public class QueryService {
      * @return Serialized results.
      */
     public String runQuery(AstNode astNode) {
-        List<AstNode> astNodeLeafNodeList = new AstLeafPicker().crawl(astNode);
-        List<BeaconFilter> beaconFiltersIndividuals = new AstNodeListConverterIndividuals().convert(astNodeLeafNodeList);
-        List<BeaconFilter> beaconFiltersBiosamples = new AstNodeListConverterBiosamples().convert(astNodeLeafNodeList);
-        List<BeaconFilter> beaconFiltersGenetics = new AstNodeListConverterGenetics().convert(astNodeLeafNodeList);
-
         try {
-            log.info("\nastNode: " + astNode);
-            log.info("\njsonLensQueryLeafNodeList: " + new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(astNodeLeafNodeList));
-            log.info("\nbeaconFiltersIndividuals: " + new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(beaconFiltersIndividuals));
+            log.info("\nastNode: " + new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(astNode));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
 
+        // Flatten AST tree, because converters cannot handle tree structures.
+        List<AstNode> astNodeLeafNodeList = new AstLeafPicker().crawl(astNode);
+        // Run converters once for each Beacon end point.
+        List<BeaconFilter> beaconFiltersIndividuals = new AstNodeListConverterIndividuals().convert(astNodeLeafNodeList);
+        List<BeaconFilter> beaconFiltersBiosamples = new AstNodeListConverterBiosamples().convert(astNodeLeafNodeList);
+        List<BeaconFilter> beaconFiltersGenetics = new AstNodeListConverterGenetics().convert(astNodeLeafNodeList);
+
+        // Add filters to sites.
+        // Create an object for holding the result objects for all sites.
+        // Insert placeholders for the measure reports.
         List<SiteResult> siteResults = new ArrayList<SiteResult>();
         for (BeaconSite site: BeaconSites.getSites()) {
+            site.individuals.baseFilters = beaconFiltersIndividuals;
+            site.biosamples.baseFilters = beaconFiltersBiosamples;
+            site.genomicVariations.baseFilters = beaconFiltersGenetics;
             String siteName = site.name;
             String siteUrl = site.url;
             SiteResult siteResult = new SiteResult(siteName, siteUrl, "PLACEHOLDER" + siteName);
             siteResults.add(siteResult);
         }
 
+        // Convert results object into a string.
         String jsonResults = "";
         try {
             jsonResults = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(siteResults);
         } catch (JsonProcessingException e) {
-            log.error("An error occurred while converting an object into JSON");
-            e.printStackTrace();
+            log.error("An error occurred while converting an object into JSON\n" + Utils.traceFromException(e));
         }
 
+        // Run Beacon query at each site, serialize measure reports into JSON strings,
+        // replace placeholders in results object with serialized measure reports.
         for (BeaconSite site: BeaconSites.getSites()) {
             String siteName = site.name;
-            String jsonMeasure = runQueryAtSite(site, beaconFiltersIndividuals, beaconFiltersBiosamples, beaconFiltersGenetics);
+            String jsonMeasure = runQueryAtSite(site);
             jsonResults = jsonResults.replaceAll("\"PLACEHOLDER" + siteName + "\"", "\n" + jsonMeasure.replaceAll("^", "        "));
         }
 
@@ -87,20 +95,14 @@ public class QueryService {
      * and returned.
      *
      * @param site
-     * @param beaconFiltersIndividuals
-     * @param beaconFiltersBiosamples
-     * @param beaconFiltersGenomicVariations
      * @return
      */
-    private String runQueryAtSite(BeaconSite site,
-                                  List<BeaconFilter> beaconFiltersIndividuals,
-                                  List<BeaconFilter> beaconFiltersBiosamples,
-                                  List<BeaconFilter> beaconFiltersGenomicVariations) {
+    private String runQueryAtSite(BeaconSite site) {
         MeasureReportAdmin measureReportAdmin = new MeasureReportAdmin();
 
-        runIndividualsQueryAtSite(site, measureReportAdmin, beaconFiltersIndividuals);
-        runBiosamplesQueryAtSite(site, measureReportAdmin, beaconFiltersBiosamples);
-        Integer geneticsCount = runBeaconEntryTypeQueryAtSite(site.genomicVariations, site.beaconQueryService, beaconFiltersGenomicVariations);
+        runIndividualsQueryAtSite(site, measureReportAdmin);
+        runBiosamplesQueryAtSite(site, measureReportAdmin);
+        Integer geneticsCount = runBeaconEntryTypeQueryAtSite(site.genomicVariations, site.beaconQueryService, site.genomicVariations.baseFilters);
         measureReportAdmin.geneticsGroupAdmin.setCount(geneticsCount);
 
         String jsonMeasure = measureReportAdmin.toString();
@@ -114,15 +116,13 @@ public class QueryService {
      *
      * @param site
      * @param measureReportAdmin
-     * @param beaconFilters
      */
     private void runIndividualsQueryAtSite(BeaconSite site,
-                                           MeasureReportAdmin measureReportAdmin,
-                                           List<BeaconFilter> beaconFilters) {
-        Integer count = runBeaconEntryTypeQueryAtSite(site.individuals, site.beaconQueryService, beaconFilters);
+                                           MeasureReportAdmin measureReportAdmin) {
+        Integer count = runBeaconEntryTypeQueryAtSite(site.individuals, site.beaconQueryService, site.individuals.baseFilters);
         measureReportAdmin.patientsGroupAdmin.setCount(count);
-        runIndividualsGenderQueryAtSite(site, measureReportAdmin, beaconFilters);
-        runIndividualsEthnicityQueryAtSite(site, measureReportAdmin, beaconFilters);
+        runIndividualsGenderQueryAtSite(site, measureReportAdmin);
+        runIndividualsEthnicityQueryAtSite(site, measureReportAdmin);
     }
 
     /**
@@ -130,13 +130,11 @@ public class QueryService {
      *
      * @param site
      * @param measureReportAdmin
-     * @param beaconFilters
      */
     private void runIndividualsGenderQueryAtSite(BeaconSite site,
-                                                 MeasureReportAdmin measureReportAdmin,
-                                                 List<BeaconFilter> beaconFilters) {
-        Integer femaleCount = runFilterQueryAtSite(site.individuals, site.beaconQueryService, beaconFilters, "id", "NCIT:C16576");
-        Integer maleCount = runFilterQueryAtSite(site.individuals, site.beaconQueryService, beaconFilters, "id", "NCIT:C20197");
+                                                 MeasureReportAdmin measureReportAdmin) {
+        Integer femaleCount = runFilterQueryAtSite(site.individuals, site.beaconQueryService, "id", "NCIT:C16576");
+        Integer maleCount = runFilterQueryAtSite(site.individuals, site.beaconQueryService, "id", "NCIT:C20197");
 
         measureReportAdmin.patientsGroupAdmin.setGenderCounts((femaleCount>=0)?femaleCount:0, (maleCount>=0)?maleCount:0);
     }
@@ -146,14 +144,12 @@ public class QueryService {
      *
      * @param site
      * @param measureReportAdmin
-     * @param beaconFilters
      */
     private void runIndividualsEthnicityQueryAtSite(BeaconSite site,
-                                                 MeasureReportAdmin measureReportAdmin,
-                                                 List<BeaconFilter> beaconFilters) {
+                                                 MeasureReportAdmin measureReportAdmin) {
         Map<String, Integer> ethnicityCounts = new HashMap<String, Integer>();
         for (String ethnicity : Utils.getEthnicityNameNcit().keySet()) {
-            Integer count = runFilterQueryAtSite(site.individuals, site.beaconQueryService, beaconFilters, "id", Utils.getEthnicityNameNcit().get(ethnicity));
+            Integer count = runFilterQueryAtSite(site.individuals, site.beaconQueryService, "id", Utils.getEthnicityNameNcit().get(ethnicity));
             log.info(ethnicity + ": " + count);
             ethnicityCounts.put(ethnicity, count);
         }
@@ -167,14 +163,12 @@ public class QueryService {
      *
      * @param site
      * @param measureReportAdmin
-     * @param beaconFilters
      */
     private void runBiosamplesQueryAtSite(BeaconSite site,
-                                           MeasureReportAdmin measureReportAdmin,
-                                           List<BeaconFilter> beaconFilters) {
-        Integer count = runBeaconEntryTypeQueryAtSite(site.biosamples, site.beaconQueryService, beaconFilters);
+                                           MeasureReportAdmin measureReportAdmin) {
+        Integer count = runBeaconEntryTypeQueryAtSite(site.biosamples, site.beaconQueryService, site.biosamples.baseFilters);
         measureReportAdmin.specimenGroupAdmin.setCount(count);
-        runBiosamplesTypeQueryAtSite(site, measureReportAdmin, beaconFilters);
+        runBiosamplesTypeQueryAtSite(site, measureReportAdmin);
     }
 
     /**
@@ -182,15 +176,13 @@ public class QueryService {
      *
      * @param site
      * @param measureReportAdmin
-     * @param beaconFilters
      */
     private void runBiosamplesTypeQueryAtSite(BeaconSite site,
-                                                 MeasureReportAdmin measureReportAdmin,
-                                                 List<BeaconFilter> beaconFilters) {
-        Integer bloodCount = runFilterQueryAtSite(site.biosamples, site.beaconQueryService, beaconFilters, "id", "UBERON:0000178");
-        Integer bloodSerumCount = runFilterQueryAtSite(site.biosamples, site.beaconQueryService, beaconFilters, "id", "UBERON:0001977");
-        Integer bloodPlasmaCount = runFilterQueryAtSite(site.biosamples, site.beaconQueryService, beaconFilters, "id", "UBERON:0001969");
-        Integer lymphCount = runFilterQueryAtSite(site.biosamples, site.beaconQueryService, beaconFilters, "id", "UBERON:0002391");
+                                                 MeasureReportAdmin measureReportAdmin) {
+        Integer bloodCount = runFilterQueryAtSite(site.biosamples, site.beaconQueryService, "id", "UBERON:0000178");
+        Integer bloodSerumCount = runFilterQueryAtSite(site.biosamples, site.beaconQueryService, "id", "UBERON:0001977");
+        Integer bloodPlasmaCount = runFilterQueryAtSite(site.biosamples, site.beaconQueryService, "id", "UBERON:0001969");
+        Integer lymphCount = runFilterQueryAtSite(site.biosamples, site.beaconQueryService, "id", "UBERON:0002391");
 
         measureReportAdmin.specimenGroupAdmin.setTypeCounts((bloodCount>=0)?bloodCount:0,
                 (bloodSerumCount>=0)?bloodSerumCount:0,
@@ -206,17 +198,15 @@ public class QueryService {
      *
      * @param beaconEntryType
      * @param beaconQueryService
-     * @param beaconFilters
      * @param filterName
      * @param filterValue
      * @return
      */
     private Integer runFilterQueryAtSite(BeaconEntryType beaconEntryType,
                                          BeaconQueryService beaconQueryService,
-                                         List<BeaconFilter> beaconFilters,
                                          String filterName,
                                          String filterValue) {
-        List<BeaconFilter> localFilters = new ArrayList<BeaconFilter>(beaconFilters); // Clone beaconFilters
+        List<BeaconFilter> localFilters = new ArrayList<BeaconFilter>(beaconEntryType.baseFilters); // Clone filters
         localFilters.add(new BeaconFilter(filterName, filterValue));
         Integer count = runBeaconEntryTypeQueryAtSite(beaconEntryType, beaconQueryService, localFilters);
         

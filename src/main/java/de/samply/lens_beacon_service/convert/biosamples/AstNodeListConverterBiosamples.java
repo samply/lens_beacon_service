@@ -10,7 +10,7 @@ import de.samply.lens_beacon_service.lens.AstNode;
 
 public class AstNodeListConverterBiosamples extends AstNodeListConverter {
     @Override
-    public BeaconFilter convert(AstNode astNode) {
+    public BeaconFilter convertSingleAstNode(AstNode astNode) {
         BeaconFilter beaconFilter = null;
         if (astNode.key != null)
             // Choose the relevant converter for this AstNode.

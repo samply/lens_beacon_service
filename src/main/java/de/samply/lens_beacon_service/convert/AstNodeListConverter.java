@@ -12,6 +12,18 @@ import java.util.List;
 
 public abstract class AstNodeListConverter {
     /**
+     * Takes an AstNode, representing the root of an AST tree and returns a corresponding
+     * list of filters.
+     *
+     * @param astNode Root node of AST tree.
+     * @return List of BeaconFilter objects.
+     */
+    public List<BeaconFilter> convert(AstNode astNode) {
+        List<AstNode> astNodeLeafNodeList = new AstLeafPicker().crawl(astNode);
+        return convertFlatAstNodeList(astNodeLeafNodeList);
+    }
+
+    /**
      * Takes a flat list of AstNode objects and returns a corresponding list of filters.
      * The AstNode objects should have empty "children" variables (that's the definition of
      * "flat").
@@ -19,10 +31,10 @@ public abstract class AstNodeListConverter {
      * @param astNodeLeafNodeList List of AstNode objects.
      * @return List of BeaconFilter objects.
      */
-    public List<BeaconFilter> convert(List<AstNode> astNodeLeafNodeList) {
+    public List<BeaconFilter> convertFlatAstNodeList(List<AstNode> astNodeLeafNodeList) {
         List<BeaconFilter> beaconFilterList = new ArrayList<BeaconFilter>();
         for (AstNode astNode : astNodeLeafNodeList) {
-            BeaconFilter beaconFilter = convert(astNode);
+            BeaconFilter beaconFilter = convertSingleAstNode(astNode);
             if (beaconFilter != null)
                 beaconFilterList.add(beaconFilter);
         }
@@ -38,5 +50,5 @@ public abstract class AstNodeListConverter {
      * @param astNode Node from AST query.
      * @return single Beacon filter.
      */
-    public abstract BeaconFilter convert(AstNode astNode);
+    public abstract BeaconFilter convertSingleAstNode(AstNode astNode);
 }

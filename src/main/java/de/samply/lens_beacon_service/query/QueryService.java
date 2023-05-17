@@ -6,7 +6,6 @@ import de.samply.lens_beacon_service.Utils;
 import de.samply.lens_beacon_service.beacon.model.BeaconFilter;
 import de.samply.lens_beacon_service.beacon.model.BeaconSite;
 import de.samply.lens_beacon_service.beacon.model.BeaconSites;
-import de.samply.lens_beacon_service.convert.AstLeafPicker;
 import de.samply.lens_beacon_service.convert.biosamples.AstNodeListConverterBiosamples;
 import de.samply.lens_beacon_service.convert.genomicVariations.AstNodeListConverterGenomicVariations;
 import de.samply.lens_beacon_service.convert.individuals.AstNodeListConverterIndividuals;
@@ -46,12 +45,10 @@ public class QueryService {
             throw new RuntimeException(e);
         }
 
-        // Flatten AST tree, because converters cannot handle tree structures.
-        List<AstNode> astNodeLeafNodeList = new AstLeafPicker().crawl(astNode);
         // Run converters once for each Beacon end point.
-        List<BeaconFilter> beaconFiltersIndividuals = new AstNodeListConverterIndividuals().convert(astNodeLeafNodeList);
-        List<BeaconFilter> beaconFiltersBiosamples = new AstNodeListConverterBiosamples().convert(astNodeLeafNodeList);
-        List<BeaconFilter> beaconFiltersGenomicVariations = new AstNodeListConverterGenomicVariations().convert(astNodeLeafNodeList);
+        List<BeaconFilter> beaconFiltersIndividuals = new AstNodeListConverterIndividuals().convert(astNode);
+        List<BeaconFilter> beaconFiltersBiosamples = new AstNodeListConverterBiosamples().convert(astNode);
+        List<BeaconFilter> beaconFiltersGenomicVariations = new AstNodeListConverterGenomicVariations().convert(astNode);
 
         // Add filters to sites.
         // Create an object for holding the result objects for all sites.

@@ -23,8 +23,6 @@ public class PatientsGroupAdmin extends GroupAdmin {
 
         List<MeasureReport.MeasureReportGroupStratifierComponent> stratifiers = new ArrayList<MeasureReport.MeasureReportGroupStratifierComponent>();
         stratifiers.add(createStratifier("Gender"));
-        stratifiers.add(createVitalStatusStratifier());
-        stratifiers.add(createStratifier("Age"));
         stratifiers.add(createStratifier("Ethnicity"));
         group.setStratifier(stratifiers);
 
@@ -69,12 +67,5 @@ public class PatientsGroupAdmin extends GroupAdmin {
                 break;
             }
         }
-    }
-
-    private MeasureReport.MeasureReportGroupStratifierComponent createVitalStatusStratifier() {
-        MeasureReport.MeasureReportGroupStratifierComponent stratifierComponent = createStratifier("75186-7");
-        stratifierComponent.addStratum(createStratum("unbekannt", 0));
-
-        return  stratifierComponent;
     }
 }

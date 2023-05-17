@@ -3,6 +3,7 @@ package de.samply.lens_beacon_service;
 import de.samply.lens_beacon_service.beacon.model.BeaconEndpoint;
 import de.samply.lens_beacon_service.beacon.model.BeaconFilter;
 import de.samply.lens_beacon_service.convert.AstNodeListConverter;
+import de.samply.lens_beacon_service.lens.AstNode;
 import de.samply.lens_beacon_service.measurereport.group.GroupAdmin;
 import de.samply.lens_beacon_service.query.Query;
 
@@ -25,4 +26,8 @@ public class EntryType {
     public List<BeaconFilter> baseFilters; // Filters for a regular query
     public GroupAdmin groupAdmin; // Creates measure report group for this entry type.
     public Query query; // Query Beacon, pack results in measure report.
+
+    public void convert(AstNode astNode) {
+        baseFilters = astNodeListConverter.convert(astNode);
+    }
 }

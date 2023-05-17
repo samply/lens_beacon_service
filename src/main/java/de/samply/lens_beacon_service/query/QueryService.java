@@ -2,12 +2,8 @@ package de.samply.lens_beacon_service.query;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.samply.lens_beacon_service.beacon.model.BeaconFilter;
 import de.samply.lens_beacon_service.beacon.model.BeaconSite;
 import de.samply.lens_beacon_service.beacon.model.BeaconSites;
-import de.samply.lens_beacon_service.convert.biosamples.AstNodeListConverterBiosamples;
-import de.samply.lens_beacon_service.convert.genomicVariations.AstNodeListConverterGenomicVariations;
-import de.samply.lens_beacon_service.convert.individuals.AstNodeListConverterIndividuals;
 import de.samply.lens_beacon_service.lens.AstNode;
 import de.samply.lens_beacon_service.lens.SiteResult;
 import de.samply.lens_beacon_service.measurereport.MeasureReportAdmin;
@@ -43,20 +39,15 @@ public class QueryService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        
-        // Run converters once for each Beacon end point.
-        List<BeaconFilter> beaconFiltersIndividuals = new AstNodeListConverterIndividuals().convert(astNode);
-        List<BeaconFilter> beaconFiltersBiosamples = new AstNodeListConverterBiosamples().convert(astNode);
-        List<BeaconFilter> beaconFiltersGenomicVariations = new AstNodeListConverterGenomicVariations().convert(astNode);
 
         // Add filters to sites.
         // Create an object for holding the result objects for all sites.
         // Insert placeholders for the measure reports.
         List<SiteResult> siteResults = new ArrayList<SiteResult>();
         for (BeaconSite site: BeaconSites.getSites()) {
-            site.individuals.baseFilters = beaconFiltersIndividuals;
-            site.biosamples.baseFilters = beaconFiltersBiosamples;
-            site.genomicVariations.baseFilters = beaconFiltersGenomicVariations;
+            site.individuals.convert(astNode);
+            site.biosamples.convert(astNode);
+            site.genomicVariations.convert(astNode);
             SiteResult siteResult = new SiteResult(site.name, site.url, "PLACEHOLDER" + site.name);
             siteResults.add(siteResult);
         }

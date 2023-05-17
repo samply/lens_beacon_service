@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Groups are the first-level subcomponents of a measure report, e.g. patients, diagnoses,
- * speciments, etc.
+ * Groups are the first-level subcomponents of a measure report, e.g. individuals, biosamples,
+ * genomic variants, etc.
  *
  * This is the base class for generating a new group.
  *
@@ -38,7 +38,7 @@ public abstract class GroupAdmin {
     /**
      * Set the total population for this group.
      *
-     * @param count Patient count.
+     * @param count Polulation count.
      */
     public void setCount(int count) {
         List<MeasureReport.MeasureReportGroupPopulationComponent> populations = group.getPopulation();
@@ -69,6 +69,7 @@ public abstract class GroupAdmin {
         group.setCode(createTextCodeableConcept(groupName));
 
         List<MeasureReport.MeasureReportGroupStratifierComponent> stratifiers = new ArrayList<MeasureReport.MeasureReportGroupStratifierComponent>();
+        // Lens seems to like to have at least one stratifier, even if it is unused.
         if (stratifierName == null)
             stratifiers.add(createNullStratifier());
         else
@@ -86,7 +87,7 @@ public abstract class GroupAdmin {
     }
 
     protected MeasureReport.MeasureReportGroupStratifierComponent createNullStratifier() {
-        MeasureReport.MeasureReportGroupStratifierComponent stratifierComponent = createStratifier("diagnosis");
+        MeasureReport.MeasureReportGroupStratifierComponent stratifierComponent = createStratifier("null");
         stratifierComponent.addStratum(createStratum("null", 0));
 
         return  stratifierComponent;

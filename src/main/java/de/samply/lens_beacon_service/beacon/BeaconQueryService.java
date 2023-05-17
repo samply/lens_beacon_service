@@ -141,7 +141,6 @@ public class BeaconQueryService {
      */
     private BeaconResponse postQuery(String uri, List<BeaconFilter> beaconFilters) {
         String jsonBeaconRequest = (new BeaconRequest(query.clone(beaconFilters))).toString();
-        log.info("\njsonBeaconRequest: " + jsonBeaconRequest);
         log.info("\nPOST Full URL: " + siteUrl + uri);
 
         return webClient

@@ -12,7 +12,7 @@ import java.util.List;
  */
 
 @Slf4j
-public class AstNodeConverterSampleType implements AstNodeConverter {
+public class AstNodeConverterBiosamples implements AstNodeConverter {
     @Override
     public BeaconFilter convert(AstNode astNode) {
         if (((List) astNode.value).get(0).equals("blood"))

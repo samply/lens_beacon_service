@@ -46,7 +46,7 @@ public class Api {
       @APIResponse(responseCode = "201", description = "Created"),
       @APIResponse(responseCode = "500", description = "Internal Server Error")
   })
-  @Operation(summary = "Retrieve count of patients matching the supplied query")
+  @Operation(summary = "Retrieve count of individuals matching the supplied query")
   public Response postAstQuery(
       @Parameter(
           name = "queryContainer",
@@ -81,7 +81,7 @@ public class Api {
   @APIResponses({
       @APIResponse(responseCode = "200", description = "Ok, when query is released")
   })
-  @Operation(summary = "Preflight OPTIONS for CORS for patient count query")
+  @Operation(summary = "Preflight OPTIONS for CORS for individuals count query")
   public Response optionsAstQuery() {
     return createPreflightCorsResponse(HttpMethod.POST, "Origin, Accept, Content-Type");
   }

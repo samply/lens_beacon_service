@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Generate the patients group for the measure report.
+ * Generate the individuals group for the measure report.
  */
 
-public class PatientsGroupAdmin extends GroupAdmin {
+public class IndividualsGroupAdmin extends GroupAdmin {
     /**
      * Generate group with all counts set to default initial values.
      *

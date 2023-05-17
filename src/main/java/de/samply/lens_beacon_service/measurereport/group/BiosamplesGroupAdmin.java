@@ -9,7 +9,7 @@ import java.util.List;
  * Generate the specimen group for the measure report.
  */
 
-public class SpecimenGroupAdmin extends GroupAdmin {
+public class BiosamplesGroupAdmin extends GroupAdmin {
     /**
      * Generate group with all counts set to default initial values.
      *
@@ -20,7 +20,7 @@ public class SpecimenGroupAdmin extends GroupAdmin {
     }
 
     /**
-     * Set the counts for the various specimen types known to Beam.
+     * Set the counts for the various biosample types known to Beam.
      *
      * @param bloodCount
      * @param bloodSerumCount

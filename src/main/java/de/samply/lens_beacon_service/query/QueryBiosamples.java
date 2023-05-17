@@ -17,7 +17,7 @@ public class QueryBiosamples {
     public static void runQueryAtSite(BeaconSite site,
                                 MeasureReportAdmin measureReportAdmin) {
         Integer count = site.beaconQueryService.runBeaconEntryTypeQueryAtSite(site.biosamples, site.biosamples.baseFilters);
-        measureReportAdmin.specimenGroupAdmin.setCount(count);
+        measureReportAdmin.biosamplesGroupAdmin.setCount(count);
         runBiosamplesTypeQueryAtSite(site, measureReportAdmin);
     }
 
@@ -34,7 +34,7 @@ public class QueryBiosamples {
         Integer bloodPlasmaCount = site.beaconQueryService.runFilterQueryAtSite(site.biosamples, "id", "UBERON:0001969");
         Integer lymphCount = site.beaconQueryService.runFilterQueryAtSite(site.biosamples, "id", "UBERON:0002391");
 
-        measureReportAdmin.specimenGroupAdmin.setTypeCounts((bloodCount>=0)?bloodCount:0,
+        measureReportAdmin.biosamplesGroupAdmin.setTypeCounts((bloodCount>=0)?bloodCount:0,
                 (bloodSerumCount>=0)?bloodSerumCount:0,
                 (bloodPlasmaCount>=0)?bloodPlasmaCount:0,
                 (lymphCount>=0)?lymphCount:0);

@@ -8,7 +8,7 @@ import de.samply.lens_beacon_service.beacon.model.BeaconSite;
 import de.samply.lens_beacon_service.beacon.model.BeaconSites;
 import de.samply.lens_beacon_service.convert.AstLeafPicker;
 import de.samply.lens_beacon_service.convert.biosamples.AstNodeListConverterBiosamples;
-import de.samply.lens_beacon_service.convert.genetics.AstNodeListConverterGenetics;
+import de.samply.lens_beacon_service.convert.genomicVariations.AstNodeListConverterGenomicVariations;
 import de.samply.lens_beacon_service.convert.individuals.AstNodeListConverterIndividuals;
 import de.samply.lens_beacon_service.lens.AstNode;
 import de.samply.lens_beacon_service.lens.SiteResult;
@@ -51,7 +51,7 @@ public class QueryService {
         // Run converters once for each Beacon end point.
         List<BeaconFilter> beaconFiltersIndividuals = new AstNodeListConverterIndividuals().convert(astNodeLeafNodeList);
         List<BeaconFilter> beaconFiltersBiosamples = new AstNodeListConverterBiosamples().convert(astNodeLeafNodeList);
-        List<BeaconFilter> beaconFiltersGenetics = new AstNodeListConverterGenetics().convert(astNodeLeafNodeList);
+        List<BeaconFilter> beaconFiltersGenomicVariations = new AstNodeListConverterGenomicVariations().convert(astNodeLeafNodeList);
 
         // Add filters to sites.
         // Create an object for holding the result objects for all sites.
@@ -60,7 +60,7 @@ public class QueryService {
         for (BeaconSite site: BeaconSites.getSites()) {
             site.individuals.baseFilters = beaconFiltersIndividuals;
             site.biosamples.baseFilters = beaconFiltersBiosamples;
-            site.genomicVariations.baseFilters = beaconFiltersGenetics;
+            site.genomicVariations.baseFilters = beaconFiltersGenomicVariations;
             String siteName = site.name;
             String siteUrl = site.url;
             SiteResult siteResult = new SiteResult(siteName, siteUrl, "PLACEHOLDER" + siteName);
@@ -103,7 +103,7 @@ public class QueryService {
 
         QueryIndividuals.runQueryAtSite(site, measureReportAdmin);
         QueryBiosamples.runQueryAtSite(site, measureReportAdmin);
-        QueryGeneticVariants.runQueryAtSite(site, measureReportAdmin);
+        QueryGenomicVariations.runQueryAtSite(site, measureReportAdmin);
 
         return measureReportAdmin.toString();
     }

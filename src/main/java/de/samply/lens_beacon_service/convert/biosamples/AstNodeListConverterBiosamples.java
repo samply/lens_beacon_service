@@ -16,7 +16,7 @@ public class AstNodeListConverterBiosamples extends AstNodeListConverter {
             // Choose the relevant converter for this AstNode.
             switch (astNode.key) {
                 case "sample_kind":
-                    beaconFilter = new AstNodeConverterSampleType().convert(astNode);
+                    beaconFilter = new AstNodeConverterBiosamples().convert(astNode);
                     break;
             }
 

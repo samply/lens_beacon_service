@@ -21,7 +21,7 @@ public class QueryIndividuals {
     public static void runQueryAtSite(BeaconSite site,
                                MeasureReportAdmin measureReportAdmin) {
         Integer count = site.beaconQueryService.runBeaconEntryTypeQueryAtSite(site.individuals, site.individuals.baseFilters);
-        measureReportAdmin.patientsGroupAdmin.setCount(count);
+        measureReportAdmin.individualsGroupAdmin.setCount(count);
         runIndividualsGenderQueryAtSite(site, measureReportAdmin);
         runIndividualsEthnicityQueryAtSite(site, measureReportAdmin);
     }
@@ -37,7 +37,7 @@ public class QueryIndividuals {
         Integer femaleCount = site.beaconQueryService.runFilterQueryAtSite(site.individuals, "id", "NCIT:C16576");
         Integer maleCount = site.beaconQueryService.runFilterQueryAtSite(site.individuals, "id", "NCIT:C20197");
 
-        measureReportAdmin.patientsGroupAdmin.setGenderCounts((femaleCount>=0)?femaleCount:0, (maleCount>=0)?maleCount:0);
+        measureReportAdmin.individualsGroupAdmin.setGenderCounts((femaleCount>=0)?femaleCount:0, (maleCount>=0)?maleCount:0);
     }
 
     /**
@@ -53,6 +53,6 @@ public class QueryIndividuals {
             Integer count = site.beaconQueryService.runFilterQueryAtSite(site.individuals,"id", Utils.getEthnicityNameNcit().get(ethnicity));
             ethnicityCounts.put(ethnicity, count);
         }
-        measureReportAdmin.patientsGroupAdmin.setEthnicityCounts(ethnicityCounts);
+        measureReportAdmin.individualsGroupAdmin.setEthnicityCounts(ethnicityCounts);
     }
 }

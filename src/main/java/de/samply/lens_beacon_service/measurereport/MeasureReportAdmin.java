@@ -2,9 +2,9 @@ package de.samply.lens_beacon_service.measurereport;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
-import de.samply.lens_beacon_service.measurereport.group.GeneticsGroupAdmin;
-import de.samply.lens_beacon_service.measurereport.group.PatientsGroupAdmin;
-import de.samply.lens_beacon_service.measurereport.group.SpecimenGroupAdmin;
+import de.samply.lens_beacon_service.measurereport.group.GenomicVariationsGroupAdmin;
+import de.samply.lens_beacon_service.measurereport.group.IndividualsGroupAdmin;
+import de.samply.lens_beacon_service.measurereport.group.BiosamplesGroupAdmin;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.MeasureReport;
@@ -24,9 +24,9 @@ import java.util.UUID;
 @Slf4j
 public class MeasureReportAdmin {
     private MeasureReport measureReport = new MeasureReport();
-    public PatientsGroupAdmin patientsGroupAdmin = new PatientsGroupAdmin();
-    public SpecimenGroupAdmin specimenGroupAdmin = new SpecimenGroupAdmin();
-    public GeneticsGroupAdmin geneticsGroupAdmin = new GeneticsGroupAdmin();
+    public IndividualsGroupAdmin individualsGroupAdmin = new IndividualsGroupAdmin();
+    public BiosamplesGroupAdmin biosamplesGroupAdmin = new BiosamplesGroupAdmin();
+    public GenomicVariationsGroupAdmin genomicVariationsGroupAdmin = new GenomicVariationsGroupAdmin();
 
     public MeasureReportAdmin() {
         measureReport.setStatus(MeasureReport.MeasureReportStatus.COMPLETE);
@@ -35,9 +35,9 @@ public class MeasureReportAdmin {
         measureReport.setMeasure("urn:uuid:" + UUID.randomUUID());
         measureReport.addExtension(createExtension());
         measureReport.setPeriod(createPeriod());
-        measureReport.addGroup(patientsGroupAdmin.generate());
-        measureReport.addGroup(specimenGroupAdmin.generate());
-        measureReport.addGroup(geneticsGroupAdmin.generate());
+        measureReport.addGroup(individualsGroupAdmin.generate());
+        measureReport.addGroup(biosamplesGroupAdmin.generate());
+        measureReport.addGroup(genomicVariationsGroupAdmin.generate());
     }
 
     /**

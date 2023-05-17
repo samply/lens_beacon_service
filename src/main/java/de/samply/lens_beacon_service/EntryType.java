@@ -13,6 +13,9 @@ import java.util.List;
  * biosamples) for a single site (e.g. EGA Cineca or Molgenis mutations).
  */
 public class EntryType {
+    public EntryType() {
+    }
+
     public EntryType(String uri, String method) {
         beaconEndpoint = new BeaconEndpoint(uri, method);
     }

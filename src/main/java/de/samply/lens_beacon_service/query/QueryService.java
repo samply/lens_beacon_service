@@ -2,7 +2,6 @@ package de.samply.lens_beacon_service.query;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.samply.lens_beacon_service.Utils;
 import de.samply.lens_beacon_service.beacon.model.BeaconFilter;
 import de.samply.lens_beacon_service.beacon.model.BeaconSite;
 import de.samply.lens_beacon_service.beacon.model.BeaconSites;
@@ -44,7 +43,7 @@ public class QueryService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-
+        
         // Run converters once for each Beacon end point.
         List<BeaconFilter> beaconFiltersIndividuals = new AstNodeListConverterIndividuals().convert(astNode);
         List<BeaconFilter> beaconFiltersBiosamples = new AstNodeListConverterBiosamples().convert(astNode);
@@ -58,26 +57,18 @@ public class QueryService {
             site.individuals.baseFilters = beaconFiltersIndividuals;
             site.biosamples.baseFilters = beaconFiltersBiosamples;
             site.genomicVariations.baseFilters = beaconFiltersGenomicVariations;
-            String siteName = site.name;
-            String siteUrl = site.url;
-            SiteResult siteResult = new SiteResult(siteName, siteUrl, "PLACEHOLDER" + siteName);
+            SiteResult siteResult = new SiteResult(site.name, site.url, "PLACEHOLDER" + site.name);
             siteResults.add(siteResult);
         }
 
         // Convert results object into a string.
-        String jsonResults = "";
-        try {
-            jsonResults = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(siteResults);
-        } catch (JsonProcessingException e) {
-            log.error("An error occurred while converting an object into JSON\n" + Utils.traceFromException(e));
-        }
+        String jsonResults = siteResults.toString();
 
         // Run Beacon query at each site, serialize measure reports into JSON strings,
         // replace placeholders in results object with serialized measure reports.
         for (BeaconSite site: BeaconSites.getSites()) {
-            String siteName = site.name;
             String jsonMeasure = runQueryAtSite(site);
-            jsonResults = jsonResults.replaceAll("\"PLACEHOLDER" + siteName + "\"", "\n" + jsonMeasure.replaceAll("^", "        "));
+            jsonResults = jsonResults.replaceAll("\"PLACEHOLDER" + site.name + "\"", "\n" + jsonMeasure.replaceAll("^", "        "));
         }
 
         return jsonResults;

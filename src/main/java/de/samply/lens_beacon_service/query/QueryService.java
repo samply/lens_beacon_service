@@ -101,9 +101,9 @@ public class QueryService {
     private String runQueryAtSite(BeaconSite site) {
         MeasureReportAdmin measureReportAdmin = new MeasureReportAdmin();
 
-        QueryIndividuals.runQueryAtSite(site, measureReportAdmin);
-        QueryBiosamples.runQueryAtSite(site, measureReportAdmin);
-        QueryGenomicVariations.runQueryAtSite(site, measureReportAdmin);
+        (new QueryIndividuals()).runQueryAtSite(site, measureReportAdmin);
+        (new QueryBiosamples()).runQueryAtSite(site, measureReportAdmin);
+        (new QueryGenomicVariations()).runQueryAtSite(site, measureReportAdmin);
 
         return measureReportAdmin.toString();
     }

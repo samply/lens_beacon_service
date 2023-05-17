@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-public class QueryIndividuals {
+public class QueryIndividuals extends Query {
     /**
      * Run a query on the individuals endpoint at a given Beacon site, using the supplied filters.
      *
@@ -18,7 +18,7 @@ public class QueryIndividuals {
      * @param site
      * @param measureReportAdmin
      */
-    public static void runQueryAtSite(BeaconSite site,
+    public void runQueryAtSite(BeaconSite site,
                                MeasureReportAdmin measureReportAdmin) {
         Integer count = site.beaconQueryService.runBeaconEntryTypeQueryAtSite(site.individuals, site.individuals.baseFilters);
         measureReportAdmin.individualsGroupAdmin.setCount(count);
@@ -32,7 +32,7 @@ public class QueryIndividuals {
      * @param site
      * @param measureReportAdmin
      */
-    private static void runIndividualsGenderQueryAtSite(BeaconSite site,
+    private void runIndividualsGenderQueryAtSite(BeaconSite site,
                                                  MeasureReportAdmin measureReportAdmin) {
         Integer femaleCount = site.beaconQueryService.runFilterQueryAtSite(site.individuals, "id", "NCIT:C16576");
         Integer maleCount = site.beaconQueryService.runFilterQueryAtSite(site.individuals, "id", "NCIT:C20197");
@@ -46,7 +46,7 @@ public class QueryIndividuals {
      * @param site
      * @param measureReportAdmin
      */
-    private static void runIndividualsEthnicityQueryAtSite(BeaconSite site,
+    private void runIndividualsEthnicityQueryAtSite(BeaconSite site,
                                                  MeasureReportAdmin measureReportAdmin) {
         Map<String, Integer> ethnicityCounts = new HashMap<String, Integer>();
         for (String ethnicity : Utils.getEthnicityNameNcit().keySet()) {

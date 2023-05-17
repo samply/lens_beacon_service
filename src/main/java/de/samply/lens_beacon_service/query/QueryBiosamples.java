@@ -5,7 +5,7 @@ import de.samply.lens_beacon_service.measurereport.MeasureReportAdmin;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class QueryBiosamples {
+public class QueryBiosamples extends Query {
     /**
      * Run a query on the biosamples endpoint at a given Beacon site, using the supplied filters.
      *
@@ -14,8 +14,8 @@ public class QueryBiosamples {
      * @param site
      * @param measureReportAdmin
      */
-    public static void runQueryAtSite(BeaconSite site,
-                                MeasureReportAdmin measureReportAdmin) {
+    public void runQueryAtSite(BeaconSite site,
+                               MeasureReportAdmin measureReportAdmin) {
         Integer count = site.beaconQueryService.runBeaconEntryTypeQueryAtSite(site.biosamples, site.biosamples.baseFilters);
         measureReportAdmin.biosamplesGroupAdmin.setCount(count);
         runBiosamplesTypeQueryAtSite(site, measureReportAdmin);
@@ -27,7 +27,7 @@ public class QueryBiosamples {
      * @param site
      * @param measureReportAdmin
      */
-    private static void runBiosamplesTypeQueryAtSite(BeaconSite site,
+    private void runBiosamplesTypeQueryAtSite(BeaconSite site,
                                                  MeasureReportAdmin measureReportAdmin) {
         Integer bloodCount = site.beaconQueryService.runFilterQueryAtSite(site.biosamples, "id", "UBERON:0000178");
         Integer bloodSerumCount = site.beaconQueryService.runFilterQueryAtSite(site.biosamples, "id", "UBERON:0001977");

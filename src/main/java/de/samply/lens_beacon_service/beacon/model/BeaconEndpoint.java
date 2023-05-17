@@ -3,13 +3,13 @@ package de.samply.lens_beacon_service.beacon.model;
 import java.util.List;
 
 /**
- * Encapsulates the information needed to access an entry-type/endpoint.
+ * Encapsulates the information needed to access Beacon endpoint.
  *
  * * uri:    E.g. "/individuals/"
  * * method: POST or GET are allowed.
  */
-public class BeaconEntryType {
-    public BeaconEntryType(String uri, String method) {
+public class BeaconEndpoint {
+    public BeaconEndpoint(String uri, String method) {
         this.uri = uri;
         this.method = method;
     }

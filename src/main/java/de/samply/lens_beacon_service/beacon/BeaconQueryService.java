@@ -1,7 +1,11 @@
 package de.samply.lens_beacon_service.beacon;
 
+import de.samply.lens_beacon_service.EntryType;
 import de.samply.lens_beacon_service.Utils;
-import de.samply.lens_beacon_service.beacon.model.*;
+import de.samply.lens_beacon_service.beacon.model.BeaconFilter;
+import de.samply.lens_beacon_service.beacon.model.BeaconQuery;
+import de.samply.lens_beacon_service.beacon.model.BeaconRequest;
+import de.samply.lens_beacon_service.beacon.model.BeaconResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -48,26 +52,26 @@ public class BeaconQueryService {
      * Takes the supplied filter set, and adds an extra filter based on filterName and filterValue.
      * Runs a query constrained by this expanded filter set.
      *
-     * The original filter set (beaconEntryType.baseFilters) is not modified, i.e. this method has no sideeffects.
+     * The original filter set (beaconEndpoint.baseFilters) is not modified, i.e. this method has no sideeffects.
      *
-     * @param beaconEntryType
+     * @param entryType
      * @param filterName
      * @param filterValue
      * @return
      */
-    public Integer runFilterQueryAtSite(BeaconEntryType beaconEntryType,
-                                         String filterName,
-                                         String filterValue) {
-        List<BeaconFilter> localFilters = new ArrayList<BeaconFilter>(beaconEntryType.baseFilters); // Clone filters
+    public Integer runFilterQueryAtSite(EntryType entryType,
+                                        String filterName,
+                                        String filterValue) {
+        List<BeaconFilter> localFilters = new ArrayList<BeaconFilter>(entryType.baseFilters); // Clone filters
         localFilters.add(new BeaconFilter(filterName, filterValue));
-        Integer count = runBeaconEntryTypeQueryAtSite(beaconEntryType, localFilters);
+        Integer count = runBeaconEntryTypeQueryAtSite(entryType, localFilters);
 
         return count;
     }
 
     /**
      * Runs a Beacon query at the site defined by beaconQueryService, using the endpoint defined
-     * by beaconEntryType.
+     * by beaconEndpoint.
      *
      * The supplied filters will be used to constrain the query.
      *
@@ -75,19 +79,19 @@ public class BeaconQueryService {
      * Possible reasons for this are that the site does not present the endpoint for the
      * entry type or an error has occurred.
      *
-     * @param beaconEntryType
+     * @param entryType
      * @param beaconFilters
      * @return
      */
-    public Integer runBeaconEntryTypeQueryAtSite(BeaconEntryType beaconEntryType,
-                                                  List<BeaconFilter> beaconFilters) {
+    public Integer runBeaconEntryTypeQueryAtSite(EntryType entryType,
+                                                 List<BeaconFilter> beaconFilters) {
         Integer count = -1;
         try {
-            BeaconResponse response = query(beaconEntryType, beaconFilters);
+            BeaconResponse response = query(entryType, beaconFilters);
             if (response != null)
                 count = response.getCount();
         } catch (Exception e) {
-            log.error("runQuery: problem with " + beaconEntryType.getEntryType() + ", trace: " + Utils.traceFromException(e));
+            log.error("runQuery: problem with " + entryType.beaconEndpoint.getEntryType() + ", trace: " + Utils.traceFromException(e));
         }
         return count;
     }
@@ -102,13 +106,13 @@ public class BeaconQueryService {
      * @param filters
      * @return
      */
-    private BeaconResponse query(BeaconEntryType entryType, List<BeaconFilter> filters) {
+    private BeaconResponse query(EntryType entryType, List<BeaconFilter> filters) {
         if (entryType == null)
             return null;
-        if (entryType.method.equals("POST"))
-            return postQuery(entryType.uri, filters);
+        if (entryType.beaconEndpoint.method.equals("POST"))
+            return postQuery(entryType.beaconEndpoint.uri, filters);
         else
-            return getQuery(entryType.uri);
+            return getQuery(entryType.beaconEndpoint.uri);
     }
 
     /**

@@ -5,7 +5,7 @@ import de.samply.lens_beacon_service.measurereport.MeasureReportAdmin;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class QueryGenomicVariations {
+public class QueryGenomicVariations extends Query {
     /**
      * Run a query on the genomicVariations endpoint at a given Beacon site, using the supplied filters.
      *
@@ -14,7 +14,7 @@ public class QueryGenomicVariations {
      * @param site
      * @param measureReportAdmin
      */
-    public static void runQueryAtSite(BeaconSite site,
+    public void runQueryAtSite(BeaconSite site,
                                 MeasureReportAdmin measureReportAdmin) {
         Integer count = site.beaconQueryService.runBeaconEntryTypeQueryAtSite(site.genomicVariations, site.genomicVariations.baseFilters);
         measureReportAdmin.genomicVariationsGroupAdmin.setCount(count);

@@ -3,6 +3,9 @@ package de.samply.lens_beacon_service.beacon.model;
 import de.samply.lens_beacon_service.EntryType;
 import de.samply.lens_beacon_service.beacon.BeaconQueryService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Bundles together all the information known about a site hosting a Beacon API.
  *
@@ -14,10 +17,10 @@ public class BeaconSite {
         this.name = name;
         this.url = url;
         this.query = query;
-        this.individuals = individuals;
-        this.biosamples = biosamples;
-        this.genomicVariations = genomicVariations;
         beaconQueryService = new BeaconQueryService(url, query);
+        entryTypes.add(individuals);
+        entryTypes.add(biosamples);
+        entryTypes.add(genomicVariations);
     }
 
     public String name; // Site name, e.g. "HD Cineca".
@@ -25,7 +28,5 @@ public class BeaconSite {
     public String url; // URL of site, e.g. "http://beacon:5050/api".
     public BeaconQuery query; // Beacon query, minus the filters.
     public BeaconQueryService beaconQueryService; // Automatically derived from URL
-    public EntryType individuals; // Define how to get information about individuals. null means not available.
-    public EntryType biosamples; // Define how to get information about biosamples. null means not available.
-    public EntryType genomicVariations; // Define how to get information about genomicVariations. null means not available.
+    public List<EntryType> entryTypes = new ArrayList<EntryType>();
 }

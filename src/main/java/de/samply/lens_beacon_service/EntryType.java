@@ -4,7 +4,6 @@ import de.samply.lens_beacon_service.beacon.model.BeaconEndpoint;
 import de.samply.lens_beacon_service.beacon.model.BeaconFilter;
 import de.samply.lens_beacon_service.convert.AstNodeListConverter;
 import de.samply.lens_beacon_service.lens.AstNode;
-import de.samply.lens_beacon_service.measurereport.group.GroupAdmin;
 import de.samply.lens_beacon_service.query.Query;
 
 import java.util.List;
@@ -24,7 +23,6 @@ public class EntryType {
     public BeaconEndpoint beaconEndpoint; // Information needed to query Beacon API for this entry type.
     public AstNodeListConverter astNodeListConverter; // Convert Lens AST to Beacon Filters.
     public List<BeaconFilter> baseFilters; // Filters for a regular query
-    public GroupAdmin groupAdmin; // Creates measure report group for this entry type.
     public Query query; // Query Beacon, pack results in measure report.
 
     public void convert(AstNode astNode) {

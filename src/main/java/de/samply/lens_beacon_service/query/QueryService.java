@@ -3,6 +3,7 @@ package de.samply.lens_beacon_service.query;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.samply.lens_beacon_service.beacon.model.BeaconSite;
+import de.samply.lens_beacon_service.EntryType;
 import de.samply.lens_beacon_service.beacon.model.BeaconSites;
 import de.samply.lens_beacon_service.lens.AstNode;
 import de.samply.lens_beacon_service.lens.SiteResult;
@@ -45,9 +46,8 @@ public class QueryService {
         // Insert placeholders for the measure reports.
         List<SiteResult> siteResults = new ArrayList<SiteResult>();
         for (BeaconSite site: BeaconSites.getSites()) {
-            site.individuals.convert(astNode);
-            site.biosamples.convert(astNode);
-            site.genomicVariations.convert(astNode);
+            for (EntryType entryType: site.entryTypes)
+                entryType.convert(astNode);
             SiteResult siteResult = new SiteResult(site.name, site.url, "PLACEHOLDER" + site.name);
             siteResults.add(siteResult);
         }
@@ -58,32 +58,15 @@ public class QueryService {
         // Run Beacon query at each site, serialize measure reports into JSON strings,
         // replace placeholders in results object with serialized measure reports.
         for (BeaconSite site: BeaconSites.getSites()) {
-            String jsonMeasure = runQueryAtSite(site);
+            MeasureReportAdmin measureReportAdmin = new MeasureReportAdmin();
+
+            for (EntryType entryType: site.entryTypes)
+                entryType.query.runQueryAtSite(site.beaconQueryService, entryType, measureReportAdmin);
+
+            String jsonMeasure = measureReportAdmin.toString();
             jsonResults = jsonResults.replaceAll("\"PLACEHOLDER" + site.name + "\"", "\n" + jsonMeasure.replaceAll("^", "        "));
         }
 
         return jsonResults;
-    }
-
-    /**
-     * Run the query at a single Beacon site.
-     *
-     * Actually, 3 queries will be run, for individuals, biosamples and variants, using the
-     * relevant filter sets for each one respectively.
-     *
-     * The results from the 3 queries will be bundled together into a serialized measure report
-     * and returned.
-     *
-     * @param site
-     * @return
-     */
-    private String runQueryAtSite(BeaconSite site) {
-        MeasureReportAdmin measureReportAdmin = new MeasureReportAdmin();
-
-        (new QueryIndividuals()).runQueryAtSite(site, measureReportAdmin);
-        (new QueryBiosamples()).runQueryAtSite(site, measureReportAdmin);
-        (new QueryGenomicVariations()).runQueryAtSite(site, measureReportAdmin);
-
-        return measureReportAdmin.toString();
     }
 }

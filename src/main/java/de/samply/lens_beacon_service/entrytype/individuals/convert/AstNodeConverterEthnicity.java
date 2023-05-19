@@ -1,4 +1,4 @@
-package de.samply.lens_beacon_service.convert.individuals;
+package de.samply.lens_beacon_service.entrytype.individuals.convert;
 
 import de.samply.lens_beacon_service.Utils;
 import de.samply.lens_beacon_service.beacon.model.BeaconFilter;

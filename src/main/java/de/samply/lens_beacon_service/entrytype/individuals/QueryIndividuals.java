@@ -1,9 +1,10 @@
-package de.samply.lens_beacon_service.query;
+package de.samply.lens_beacon_service.entrytype.individuals;
 
 import de.samply.lens_beacon_service.entrytype.EntryType;
 import de.samply.lens_beacon_service.Utils;
 import de.samply.lens_beacon_service.beacon.BeaconQueryService;
 import de.samply.lens_beacon_service.measurereport.MeasureReportAdmin;
+import de.samply.lens_beacon_service.query.Query;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;

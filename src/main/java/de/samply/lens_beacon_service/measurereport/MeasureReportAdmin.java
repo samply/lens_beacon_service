@@ -2,9 +2,9 @@ package de.samply.lens_beacon_service.measurereport;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
-import de.samply.lens_beacon_service.measurereport.group.GenomicVariationsGroupAdmin;
-import de.samply.lens_beacon_service.measurereport.group.IndividualsGroupAdmin;
-import de.samply.lens_beacon_service.measurereport.group.BiosamplesGroupAdmin;
+import de.samply.lens_beacon_service.entrytype.genomicVariations.GenomicVariationsGroupAdmin;
+import de.samply.lens_beacon_service.entrytype.individuals.IndividualsGroupAdmin;
+import de.samply.lens_beacon_service.entrytype.biosamples.BiosamplesGroupAdmin;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.MeasureReport;

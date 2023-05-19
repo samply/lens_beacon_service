@@ -1,4 +1,4 @@
-package de.samply.lens_beacon_service.measurereport.group;
+package de.samply.lens_beacon_service.measurereport;
 
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;

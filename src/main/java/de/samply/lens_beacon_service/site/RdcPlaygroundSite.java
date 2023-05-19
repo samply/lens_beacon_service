@@ -1,8 +1,8 @@
 package de.samply.lens_beacon_service.site;
 
 import de.samply.lens_beacon_service.beacon.model.BeaconQueryGranularityUc;
-import de.samply.lens_beacon_service.entrytype.BiosamplesEntryType;
-import de.samply.lens_beacon_service.entrytype.IndividualsEntryType;
+import de.samply.lens_beacon_service.entrytype.biosamples.BiosamplesEntryType;
+import de.samply.lens_beacon_service.entrytype.individuals.IndividualsEntryType;
 
 public class RdcPlaygroundSite extends Site {
     public RdcPlaygroundSite() {

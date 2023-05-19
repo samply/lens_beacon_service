@@ -1,5 +1,6 @@
-package de.samply.lens_beacon_service.measurereport.group;
+package de.samply.lens_beacon_service.entrytype.genomicVariations;
 
+import de.samply.lens_beacon_service.measurereport.GroupAdmin;
 import org.hl7.fhir.r4.model.MeasureReport;
 
 /**

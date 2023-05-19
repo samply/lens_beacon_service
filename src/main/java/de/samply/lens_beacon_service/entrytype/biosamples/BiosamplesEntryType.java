@@ -1,7 +1,7 @@
-package de.samply.lens_beacon_service.entrytype;
+package de.samply.lens_beacon_service.entrytype.biosamples;
 
-import de.samply.lens_beacon_service.convert.biosamples.AstNodeListConverterBiosamples;
-import de.samply.lens_beacon_service.query.QueryBiosamples;
+import de.samply.lens_beacon_service.entrytype.biosamples.convert.AstNodeListConverterBiosamples;
+import de.samply.lens_beacon_service.entrytype.EntryType;
 
 public class BiosamplesEntryType extends EntryType {
     public BiosamplesEntryType() {

@@ -1,4 +1,4 @@
-package de.samply.lens_beacon_service.convert.biosamples;
+package de.samply.lens_beacon_service.entrytype.biosamples.convert;
 
 import de.samply.lens_beacon_service.beacon.model.BeaconFilter;
 import de.samply.lens_beacon_service.convert.AstNodeConverter;

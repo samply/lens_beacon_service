@@ -1,24 +1,25 @@
-package de.samply.lens_beacon_service.convert.genomicVariations;
+package de.samply.lens_beacon_service.entrytype.individuals.convert;
 
 import de.samply.lens_beacon_service.beacon.model.BeaconFilter;
 import de.samply.lens_beacon_service.convert.AstNodeListConverter;
 import de.samply.lens_beacon_service.lens.AstNode;
-import lombok.extern.slf4j.Slf4j;
 
 /**
- * Convert a list of AstNode leaf elements into a list of Beacon filters for biosamples.
+ * Convert a list of AstNode leaf elements into a list of Beacon filters for individuals.
  */
 
-@Slf4j
-public class AstNodeListConverterGenomicVariations extends AstNodeListConverter {
+public class AstNodeListConverterIndividuals extends AstNodeListConverter {
     @Override
     public BeaconFilter convertSingleAstNode(AstNode astNode) {
         BeaconFilter beaconFilter = null;
         if (astNode.key != null)
             // Choose the relevant converter for this AstNode.
             switch (astNode.key) {
-                case "genomic_variation":
-                    beaconFilter = new AstNodeConverterGenomicVariations().convert(astNode);
+                case "gender":
+                    beaconFilter = new AstNodeConverterSex().convert(astNode);
+                    break;
+                case "ethnicity":
+                    beaconFilter = new AstNodeConverterEthnicity().convert(astNode);
                     break;
             }
 

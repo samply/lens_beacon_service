@@ -1,8 +1,7 @@
 package de.samply.lens_beacon_service.entrytype.individuals;
 
-import de.samply.lens_beacon_service.entrytype.EntryType;
-import de.samply.lens_beacon_service.Utils;
 import de.samply.lens_beacon_service.beacon.BeaconQueryService;
+import de.samply.lens_beacon_service.entrytype.EntryType;
 import de.samply.lens_beacon_service.measurereport.MeasureReportAdmin;
 import de.samply.lens_beacon_service.query.Query;
 import lombok.extern.slf4j.Slf4j;
@@ -52,8 +51,8 @@ public class QueryIndividuals extends Query {
                                                     EntryType entryType,
                                                     MeasureReportAdmin measureReportAdmin) {
         Map<String, Integer> ethnicityCounts = new HashMap<String, Integer>();
-        for (String ethnicity : Utils.getEthnicityNameNcit().keySet()) {
-            Integer count = beaconQueryService.runFilterQueryAtSite(entryType,"id", Utils.getEthnicityNameNcit().get(ethnicity));
+        for (String ethnicity : NameOntologyMaps.ethnicityNameNcit.keySet()) {
+            Integer count = beaconQueryService.runFilterQueryAtSite(entryType,"id", NameOntologyMaps.ethnicityNameNcit.get(ethnicity));
             ethnicityCounts.put(ethnicity, count);
         }
         ((IndividualsGroupAdmin)entryType.groupAdmin).setEthnicityCounts(ethnicityCounts);

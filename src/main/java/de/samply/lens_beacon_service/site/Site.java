@@ -14,14 +14,8 @@ import java.util.List;
  * API, plus information about some of the endpoints (BeaconEndpoint).
  */
 public class Site {
-    public Site(String name, String url, BeaconQuery query, EntryType individuals, EntryType biosamples, EntryType genomicVariations) {
-        this.name = name;
-        this.url = url;
-        this.query = query;
+    protected void init() {
         beaconQueryService = new BeaconQueryService(url, query);
-        entryTypes.add(individuals);
-        entryTypes.add(biosamples);
-        entryTypes.add(genomicVariations);
     }
 
     public String name; // Site name, e.g. "HD Cineca".

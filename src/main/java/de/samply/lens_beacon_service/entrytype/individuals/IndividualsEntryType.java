@@ -12,5 +12,6 @@ public class IndividualsEntryType extends EntryType {
         super(uri, method);
         astNodeListConverter = new AstNodeListConverterIndividuals();
         query = new QueryIndividuals();
+        groupAdmin = new IndividualsGroupAdmin();
     }
 }

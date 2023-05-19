@@ -13,16 +13,14 @@ import java.util.Map;
 @Slf4j
 public class QueryIndividuals extends Query {
     /**
-     * Run a query on the individuals endpoint at a given Beacon site, using the supplied filters.
+     * Run queries for stratifiers on the genomicVariations endpoint at a given Beacon site, using the supplied filters.
      *
      * The measureReportAdmin will be used to store the results of the query.
      *
      * @param entryType
      * @param measureReportAdmin
      */
-    public void runQueryAtSite(BeaconQueryService beaconQueryService, EntryType entryType, MeasureReportAdmin measureReportAdmin) {
-        Integer count = beaconQueryService.runBeaconEntryTypeQueryAtSite(entryType, entryType.baseFilters);
-        measureReportAdmin.individualsGroupAdmin.setCount(count);
+    public void runStratifierQueriesAtSite(BeaconQueryService beaconQueryService, EntryType entryType, MeasureReportAdmin measureReportAdmin) {
         runIndividualsGenderQueryAtSite(beaconQueryService, entryType, measureReportAdmin);
         runIndividualsEthnicityQueryAtSite(beaconQueryService, entryType, measureReportAdmin);
     }
@@ -40,7 +38,7 @@ public class QueryIndividuals extends Query {
         Integer femaleCount = beaconQueryService.runFilterQueryAtSite(entryType, "id", "NCIT:C16576");
         Integer maleCount = beaconQueryService.runFilterQueryAtSite(entryType, "id", "NCIT:C20197");
 
-        measureReportAdmin.individualsGroupAdmin.setGenderCounts((femaleCount>=0)?femaleCount:0, (maleCount>=0)?maleCount:0);
+        ((IndividualsGroupAdmin)entryType.groupAdmin).setGenderCounts((femaleCount>=0)?femaleCount:0, (maleCount>=0)?maleCount:0);
     }
 
     /**
@@ -58,6 +56,6 @@ public class QueryIndividuals extends Query {
             Integer count = beaconQueryService.runFilterQueryAtSite(entryType,"id", Utils.getEthnicityNameNcit().get(ethnicity));
             ethnicityCounts.put(ethnicity, count);
         }
-        measureReportAdmin.individualsGroupAdmin.setEthnicityCounts(ethnicityCounts);
+        ((IndividualsGroupAdmin)entryType.groupAdmin).setEthnicityCounts(ethnicityCounts);
     }
 }

@@ -19,15 +19,13 @@ public class IndividualsGroupAdmin extends GroupAdmin {
      *
      * @return The group object.
      */
-    public MeasureReport.MeasureReportGroupComponent generate() {
+    public void init() {
         group.setCode(createTextCodeableConcept("patients"));
 
         List<MeasureReport.MeasureReportGroupStratifierComponent> stratifiers = new ArrayList<MeasureReport.MeasureReportGroupStratifierComponent>();
         stratifiers.add(createStratifier("Gender"));
         stratifiers.add(createStratifier("Ethnicity"));
         group.setStratifier(stratifiers);
-
-        return group;
     }
 
     /**

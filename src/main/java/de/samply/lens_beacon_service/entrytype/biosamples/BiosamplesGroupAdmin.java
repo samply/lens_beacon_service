@@ -16,8 +16,8 @@ public class BiosamplesGroupAdmin extends GroupAdmin {
      *
      * @return The group object.
      */
-    public MeasureReport.MeasureReportGroupComponent generate() {
-        return generate("specimen", "sample_kind");
+    public void init() {
+        init("specimen", "sample_kind");
     }
 
     /**

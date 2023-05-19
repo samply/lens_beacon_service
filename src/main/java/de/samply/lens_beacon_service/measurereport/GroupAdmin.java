@@ -20,11 +20,12 @@ import java.util.List;
  * because JSON generation breaks if you use subclasses.
  */
 public abstract class GroupAdmin {
-    protected MeasureReport.MeasureReportGroupComponent group;
+    public MeasureReport.MeasureReportGroupComponent group;
 
     public GroupAdmin() {
         group = new MeasureReport.MeasureReportGroupComponent();
         group.setPopulation(createPopulations(-1));
+        init();
     }
 
     /**
@@ -32,7 +33,7 @@ public abstract class GroupAdmin {
      *
      * @return The group object.
      */
-    public abstract MeasureReport.MeasureReportGroupComponent generate();
+    public abstract void init();
 
 
     /**
@@ -54,8 +55,8 @@ public abstract class GroupAdmin {
      * @param groupName Name of this group.
      * @return
      */
-    protected  MeasureReport.MeasureReportGroupComponent generate(String groupName) {
-        return generate(groupName, null);
+    protected  void init(String groupName) {
+        init(groupName, null);
     }
 
     /**
@@ -65,7 +66,7 @@ public abstract class GroupAdmin {
      * @param stratifierName If null, insert an empty stratifier.
      * @return
      */
-    protected  MeasureReport.MeasureReportGroupComponent generate(String groupName, String stratifierName) {
+    protected  void init(String groupName, String stratifierName) {
         group.setCode(createTextCodeableConcept(groupName));
 
         List<MeasureReport.MeasureReportGroupStratifierComponent> stratifiers = new ArrayList<MeasureReport.MeasureReportGroupStratifierComponent>();
@@ -75,8 +76,6 @@ public abstract class GroupAdmin {
         else
             stratifiers.add(createStratifier(stratifierName));
         group.setStratifier(stratifiers);
-
-        return group;
     }
 
     protected List<MeasureReport.MeasureReportGroupPopulationComponent> createPopulations(int count) {

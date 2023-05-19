@@ -3,7 +3,6 @@ package de.samply.lens_beacon_service.entrytype.genomicVariations;
 
 import de.samply.lens_beacon_service.entrytype.EntryType;
 import de.samply.lens_beacon_service.entrytype.genomicVariations.convert.AstNodeListConverterGenomicVariations;
-import de.samply.lens_beacon_service.entrytype.genomicVariations.QueryGenomicVariations;
 
 public class GenomicVariationsEntryType extends EntryType {
     public GenomicVariationsEntryType() {
@@ -14,5 +13,6 @@ public class GenomicVariationsEntryType extends EntryType {
         super(uri, method);
         astNodeListConverter = new AstNodeListConverterGenomicVariations();
         query = new QueryGenomicVariations();
+        groupAdmin = new GenomicVariationsGroupAdmin();
     }
 }

@@ -1,6 +1,6 @@
 package de.samply.lens_beacon_service.beacon;
 
-import de.samply.lens_beacon_service.EntryType;
+import de.samply.lens_beacon_service.entrytype.EntryType;
 import de.samply.lens_beacon_service.Utils;
 import de.samply.lens_beacon_service.beacon.model.BeaconFilter;
 import de.samply.lens_beacon_service.beacon.model.BeaconQuery;

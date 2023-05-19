@@ -1,4 +1,4 @@
-package de.samply.lens_beacon_service;
+package de.samply.lens_beacon_service.entrytype;
 
 import de.samply.lens_beacon_service.beacon.model.BeaconEndpoint;
 import de.samply.lens_beacon_service.beacon.model.BeaconFilter;

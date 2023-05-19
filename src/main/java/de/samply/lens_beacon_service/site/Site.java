@@ -1,6 +1,7 @@
-package de.samply.lens_beacon_service.beacon.model;
+package de.samply.lens_beacon_service.site;
 
-import de.samply.lens_beacon_service.EntryType;
+import de.samply.lens_beacon_service.beacon.model.BeaconQuery;
+import de.samply.lens_beacon_service.entrytype.EntryType;
 import de.samply.lens_beacon_service.beacon.BeaconQueryService;
 
 import java.util.ArrayList;
@@ -12,8 +13,8 @@ import java.util.List;
  * This information includes a name that we can give the site, the URL of the
  * API, plus information about some of the endpoints (BeaconEndpoint).
  */
-public class BeaconSite {
-    public BeaconSite(String name, String url, BeaconQuery query, EntryType individuals, EntryType biosamples, EntryType genomicVariations) {
+public class Site {
+    public Site(String name, String url, BeaconQuery query, EntryType individuals, EntryType biosamples, EntryType genomicVariations) {
         this.name = name;
         this.url = url;
         this.query = query;

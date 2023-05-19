@@ -1,9 +1,11 @@
-package de.samply.lens_beacon_service.beacon.model;
+package de.samply.lens_beacon_service.site;
 
-import de.samply.lens_beacon_service.BiosamplesEntryType;
-import de.samply.lens_beacon_service.EntryType;
-import de.samply.lens_beacon_service.GenomicVariationsEntryType;
-import de.samply.lens_beacon_service.IndividualsEntryType;
+import de.samply.lens_beacon_service.beacon.model.BeaconQueryGranularityLc;
+import de.samply.lens_beacon_service.beacon.model.BeaconQueryGranularityUc;
+import de.samply.lens_beacon_service.entrytype.BiosamplesEntryType;
+import de.samply.lens_beacon_service.entrytype.EntryType;
+import de.samply.lens_beacon_service.entrytype.GenomicVariationsEntryType;
+import de.samply.lens_beacon_service.entrytype.IndividualsEntryType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,15 +18,15 @@ import java.util.List;
  * Some kind of registration API would also be a good idea.
  */
 
-public class BeaconSites {
+public class Sites {
     // Make this class a singleton
-    private BeaconSites() {
+    private Sites() {
     }
 
-    private static List<BeaconSite> sites;
+    private static List<Site> sites;
     static
     {
-        sites = new ArrayList<BeaconSite>();
+        sites = new ArrayList<Site>();
 
         // Standard entry types
         EntryType individuals = new IndividualsEntryType();
@@ -32,23 +34,23 @@ public class BeaconSites {
         EntryType genomicVariations = new GenomicVariationsEntryType();
 
         // Site definitions
-        BeaconSite hdCineca = new BeaconSite("HD Cineca", "http://beacon:5050/api",
+        Site hdCineca = new Site("HD Cineca", "http://beacon:5050/api",
                 new BeaconQueryGranularityLc(),
                 new IndividualsEntryType("/individuals/", "POST"), // Error 380 without trailing slash
                 new BiosamplesEntryType("/biosamples/", "POST"), // Error 380 without trailing slash
                 new GenomicVariationsEntryType("/g_variants/", "POST")); // Error 380 without trailing slash
-        BeaconSite egaCineca = new BeaconSite("EGA Cineca", "https://ega-archive.org/beacon-apis/cineca",
+        Site egaCineca = new Site("EGA Cineca", "https://ega-archive.org/beacon-apis/cineca",
                 new BeaconQueryGranularityUc(),
                 individuals, biosamples, genomicVariations);
-        BeaconSite molgenisMutations = new BeaconSite("Molgenis mutations", "https://mutatiedatabases.molgeniscloud.org/api/beacon",
+        Site molgenisMutations = new Site("Molgenis mutations", "https://mutatiedatabases.molgeniscloud.org/api/beacon",
                 new BeaconQueryGranularityUc(),
                 individuals,
                 new BiosamplesEntryType("/biosamples", "GET"), // Uses GET, deviates from Beacon 2 standard
                 new GenomicVariationsEntryType("/g_variants", "GET")); // Uses GET, deviates from Beacon 2 standard
-        BeaconSite rdcPlayground = new BeaconSite("RDConnect playground", "https://playground.rd-connect.eu/beacon2/api",
+        Site rdcPlayground = new Site("RDConnect playground", "https://playground.rd-connect.eu/beacon2/api",
                 new BeaconQueryGranularityUc(),
                 individuals, biosamples, null);
-        BeaconSite progenetix = new BeaconSite("Progenetix", "https://progenetix.org/beacon",
+        Site progenetix = new Site("Progenetix", "https://progenetix.org/beacon",
                 new BeaconQueryGranularityUc(),
                 individuals, biosamples, genomicVariations);
 
@@ -59,7 +61,7 @@ public class BeaconSites {
 //        sites.add(progenetix);
     }
 
-    public static List<BeaconSite> getSites() {
+    public static List<Site> getSites() {
         return sites;
     }
 }

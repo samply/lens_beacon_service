@@ -13,6 +13,8 @@ public class GenomicVariationsGroupAdmin extends GroupAdmin {
      * @return The group object.
      */
     public void init() {
-        init("genetics");
+        super.init("genetics");
+        // Lens seems to like to have at least one stratifier, even if it is unused.
+        group.getStratifier().add(createNullStratifier());
     }
 }

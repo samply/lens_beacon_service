@@ -1,70 +1,40 @@
 package de.samply.lens_beacon_service.entrytype.individuals;
 
 import de.samply.lens_beacon_service.measurereport.GroupAdmin;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.MeasureReport;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Generate the individuals group for the measure report.
  */
 
+@Slf4j
 public class IndividualsGroupAdmin extends GroupAdmin {
-    /**
-     * Generate group with all counts set to default initial values.
-     *
-     * @return The group object.
-     */
+    private final String STRATIFIER_GENDER = "Gender";
+    private final String STRATIFIER_ETHNICITY = "Ethnicity";
+
     public void init() {
-        group.setCode(createTextCodeableConcept("patients"));
-
-        List<MeasureReport.MeasureReportGroupStratifierComponent> stratifiers = new ArrayList<MeasureReport.MeasureReportGroupStratifierComponent>();
-        stratifiers.add(createStratifier("Gender"));
-        stratifiers.add(createStratifier("Ethnicity"));
-        group.setStratifier(stratifiers);
+        super.init("patients");
+        group.getStratifier().add(createStratifier(STRATIFIER_GENDER));
+        group.getStratifier().add(createStratifier(STRATIFIER_ETHNICITY));
     }
 
     /**
-     * Add male and female counts to gender stratifier.
+     * Add counts to the gender stratifier.
      *
-     * @param femaleCount
-     * @param maleCount
+     * @param counts
      */
-    public void setGenderCounts(int femaleCount, int maleCount) {
-        List<MeasureReport.MeasureReportGroupStratifierComponent> stratifierComponents = group.getStratifier();
-        for (MeasureReport.MeasureReportGroupStratifierComponent stratifierComponent: stratifierComponents) {
-            CodeableConcept code = stratifierComponent.getCode().get(0);
-            String text = code.getText();
-            if (text.equals("Gender")) {
-                stratifierComponent.addStratum(createStratum("female", femaleCount));
-                stratifierComponent.addStratum(createStratum("male", maleCount));
-                break;
-            }
-        }
+    public void setGenderCounts(Map<String, Integer> counts) {
+        setStratifierCounts(counts, STRATIFIER_GENDER);
     }
 
     /**
-     * Add counts for the various ethnicities to the ethnicity stratifier.
+     * Add counts to the ethnicity stratifier.
      *
-     * @param ethnicityCounts
+     * @param counts
      */
-    public void setEthnicityCounts(Map<String, Integer> ethnicityCounts) {
-        List<MeasureReport.MeasureReportGroupStratifierComponent> stratifierComponents = group.getStratifier();
-        for (MeasureReport.MeasureReportGroupStratifierComponent stratifierComponent: stratifierComponents) {
-            CodeableConcept code = stratifierComponent.getCode().get(0);
-            String text = code.getText();
-            if (text.equals("Ethnicity")) {
-                // Order by key length. This looks better in the Lens histogram.
-                for (String ethnicity: ethnicityCounts.keySet().stream()
-                        .sorted((str1, str2) -> str1.length() - str2.length())
-                        .collect(Collectors.toList()))
-                    stratifierComponent.addStratum(createStratum(ethnicity, ethnicityCounts.get(ethnicity)));
-                break;
-            }
-        }
+    public void setEthnicityCounts(Map<String, Integer> counts) {
+        setStratifierCounts(counts, STRATIFIER_ETHNICITY);
     }
 }

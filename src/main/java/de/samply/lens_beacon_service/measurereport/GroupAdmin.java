@@ -1,11 +1,14 @@
 package de.samply.lens_beacon_service.measurereport;
 
+import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.MeasureReport;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Groups are the first-level subcomponents of a measure report, e.g. individuals, biosamples,
@@ -19,6 +22,7 @@ import java.util.List;
  * I had to use a generator class rather than subclassing from MeasureReportGroupComponent
  * because JSON generation breaks if you use subclasses.
  */
+@Slf4j
 public abstract class GroupAdmin {
     public MeasureReport.MeasureReportGroupComponent group;
 
@@ -28,13 +32,19 @@ public abstract class GroupAdmin {
         init();
     }
 
+    public abstract void init();
+
     /**
      * Generate group with all counts set to default initial values.
      *
      * @return The group object.
      */
-    public abstract void init();
+    protected void init(String groupName) {
+        group.setCode(createTextCodeableConcept(groupName));
 
+        List<MeasureReport.MeasureReportGroupStratifierComponent> stratifiers = new ArrayList<MeasureReport.MeasureReportGroupStratifierComponent>();
+        group.setStratifier(stratifiers);
+    }
 
     /**
      * Set the total population for this group.
@@ -47,35 +57,6 @@ public abstract class GroupAdmin {
             return;
         // Set the population count in the first population in this group.
         populations.get(0).setCount(count);
-    }
-
-    /**
-     * Generate a group with the given name.
-     *
-     * @param groupName Name of this group.
-     * @return
-     */
-    protected  void init(String groupName) {
-        init(groupName, null);
-    }
-
-    /**
-     * Generate a group with the given name and with a single named stratifier.
-     *
-     * @param groupName Name of this group.
-     * @param stratifierName If null, insert an empty stratifier.
-     * @return
-     */
-    protected  void init(String groupName, String stratifierName) {
-        group.setCode(createTextCodeableConcept(groupName));
-
-        List<MeasureReport.MeasureReportGroupStratifierComponent> stratifiers = new ArrayList<MeasureReport.MeasureReportGroupStratifierComponent>();
-        // Lens seems to like to have at least one stratifier, even if it is unused.
-        if (stratifierName == null)
-            stratifiers.add(createNullStratifier());
-        else
-            stratifiers.add(createStratifier(stratifierName));
-        group.setStratifier(stratifiers);
     }
 
     protected List<MeasureReport.MeasureReportGroupPopulationComponent> createPopulations(int count) {
@@ -125,6 +106,27 @@ public abstract class GroupAdmin {
 
         return codeableConcept;
     }
+    /**
+     * Add counts to the named stratifier.
+     *
+     * @param counts
+     */
+    protected void setStratifierCounts(Map<String, Integer> counts, String stratifierName) {
+        List<MeasureReport.MeasureReportGroupStratifierComponent> stratifierComponents = group.getStratifier();
+        for (MeasureReport.MeasureReportGroupStratifierComponent stratifierComponent: stratifierComponents) {
+            CodeableConcept code = stratifierComponent.getCode().get(0);
+            String text = code.getText();
+            if (text.equals(stratifierName)) {
+                // Order by key length. This looks better in the Lens histogram.
+                for (String ethnicity: counts.keySet().stream()
+                        .sorted((str1, str2) -> str1.length() - str2.length())
+                        .collect(Collectors.toList()))
+                    stratifierComponent.addStratum(createStratum(ethnicity, counts.get(ethnicity)));
+                break;
+            }
+        }
+    }
+
 
     /**
      * Create a population with the given count.

@@ -1,45 +1,32 @@
 package de.samply.lens_beacon_service.entrytype.biosamples;
 
 import de.samply.lens_beacon_service.measurereport.GroupAdmin;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.MeasureReport;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * Generate the specimen group for the measure report.
  */
 
 public class BiosamplesGroupAdmin extends GroupAdmin {
+    private final String STRATIFIER_SAMPLE_KIND = "sample_kind";
+
     /**
      * Generate group with all counts set to default initial values.
      *
      * @return The group object.
      */
     public void init() {
-        init("specimen", "sample_kind");
+        super.init("specimen");
+        group.getStratifier().add(createStratifier(STRATIFIER_SAMPLE_KIND));
     }
 
     /**
      * Set the counts for the various biosample types known to Beam.
      *
-     * @param bloodCount
-     * @param bloodSerumCount
-     * @param bloodPlasmaCount
-     * @param lymphCount
+     * @param counts
      */
-    public void setTypeCounts(int bloodCount, int bloodSerumCount, int bloodPlasmaCount, int lymphCount) {
-        List<MeasureReport.MeasureReportGroupStratifierComponent> stratifierComponents = group.getStratifier();
-        for (MeasureReport.MeasureReportGroupStratifierComponent stratifierComponent: stratifierComponents) {
-            CodeableConcept code = stratifierComponent.getCode().get(0);
-            String text = code.getText();
-            if (text.equals("sample_kind")) {
-                stratifierComponent.addStratum(createStratum("blood", bloodCount));
-                stratifierComponent.addStratum(createStratum("lymph", lymphCount));
-                stratifierComponent.addStratum(createStratum("blood-plasma", bloodPlasmaCount));
-                stratifierComponent.addStratum(createStratum("blood-serum", bloodSerumCount));
-                break;
-            }
-        }
+    public void setBiosampleTypeCounts(Map<String, Integer> counts) {
+        setStratifierCounts(counts, STRATIFIER_SAMPLE_KIND);
     }
 }

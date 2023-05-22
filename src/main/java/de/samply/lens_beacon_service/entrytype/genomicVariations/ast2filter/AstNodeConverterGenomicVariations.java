@@ -1,4 +1,4 @@
-package de.samply.lens_beacon_service.entrytype.genomicVariations.convert;
+package de.samply.lens_beacon_service.entrytype.genomicVariations.ast2filter;
 
 import de.samply.lens_beacon_service.beacon.model.BeaconFilter;
 import de.samply.lens_beacon_service.convert.AstNodeConverter;
@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 
 @Slf4j
-public class AstNodeConverterGenomicVariations implements AstNodeConverter {
+public class AstNodeConverterGenomicVariations extends AstNodeConverter {
     @Override
     public BeaconFilter convert(AstNode astNode) {
         String value = (String) astNode.value;

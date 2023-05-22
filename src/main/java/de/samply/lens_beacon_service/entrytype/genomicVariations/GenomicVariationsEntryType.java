@@ -2,7 +2,7 @@ package de.samply.lens_beacon_service.entrytype.genomicVariations;
 
 
 import de.samply.lens_beacon_service.entrytype.EntryType;
-import de.samply.lens_beacon_service.entrytype.genomicVariations.convert.AstNodeListConverterGenomicVariations;
+import de.samply.lens_beacon_service.entrytype.genomicVariations.ast2filter.AstNodeListConverterGenomicVariations;
 
 public class GenomicVariationsEntryType extends EntryType {
     public GenomicVariationsEntryType() {

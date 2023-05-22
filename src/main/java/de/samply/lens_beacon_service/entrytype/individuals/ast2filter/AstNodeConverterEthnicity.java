@@ -13,8 +13,5 @@ public class AstNodeConverterEthnicity extends AstNodeConverter {
     @Override
     public BeaconFilter convert(AstNode astNode) {
         return(convert(astNode, NameOntologyMaps.ethnicityNameNcit));
-//        String ethnicity = NameOntologyMaps.ethnicityNameNcit.get(((List) astNode.value).get(0));
-//        BeaconFilter beaconFilter = new BeaconFilter("id", ethnicity);
-//        return beaconFilter;
     }
 }

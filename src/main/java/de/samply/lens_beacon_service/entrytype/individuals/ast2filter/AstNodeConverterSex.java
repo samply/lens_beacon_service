@@ -12,11 +12,6 @@ import de.samply.lens_beacon_service.lens.AstNode;
 public class AstNodeConverterSex extends AstNodeConverter {
     @Override
     public BeaconFilter convert(AstNode astNode) {
-//        if (((List) astNode.value).get(0).equals("male"))
-//            return new BeaconFilter("id", "NCIT:C20197");
-//        if (((List) astNode.value).get(0).equals("female"))
-//            return new BeaconFilter("id", "NCIT:C16576");
-//        return null;
         return(convert(astNode, NameOntologyMaps.genderNameNcit));
     }
 }

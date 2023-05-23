@@ -41,11 +41,14 @@ public class QueryService {
             throw new RuntimeException(e);
         }
 
+        // Create a fresh list of known Beacon sites.
+        List<Site> sites = Sites.getSites();
+
         // Add filters to sites.
         // Create an object for holding the result objects for all sites.
         // Insert placeholders for the measure reports.
         List<SiteResult> siteResults = new ArrayList<SiteResult>();
-        for (Site site: Sites.getSites()) {
+        for (Site site: sites) {
             for (EntryType entryType: site.entryTypes)
                 entryType.convert(astNode);
             SiteResult siteResult = new SiteResult(site.name, site.url, "PLACEHOLDER" + site.name);
@@ -57,7 +60,7 @@ public class QueryService {
 
         // Run Beacon query at each site, serialize measure reports into JSON strings,
         // replace placeholders in results object with serialized measure reports.
-        for (Site site: Sites.getSites()) {
+        for (Site site: sites) {
             MeasureReportAdmin measureReportAdmin = new MeasureReportAdmin();
 
             for (EntryType entryType: site.entryTypes)

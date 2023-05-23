@@ -5,7 +5,7 @@ import de.samply.lens_beacon_service.entrytype.EntryType;
 
 public class IndividualsEntryType extends EntryType {
     public IndividualsEntryType() {
-        super("/individuals", "POST");
+        this("/individuals", "POST");
     }
 
     public IndividualsEntryType(String uri, String method) {

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Provides a static list of known Beacon sites.
+ * Provides a list of known Beacon sites.
  *
  * This is basically a hard-coded list of sites that will be contacted when a
  * query is received. It would be better if this information resided in a database.
@@ -13,13 +13,10 @@ import java.util.List;
 
 public class Sites {
     // Make this class a singleton
-    private Sites() {
-    }
+    private Sites() {}
 
-    private static List<Site> sites;
-    static
-    {
-        sites = new ArrayList<Site>();
+    public static List<Site> getSites() {
+        List<Site> sites = new ArrayList<Site>();
 
         // Site definitions
         sites.add(new HdCinecaSite());
@@ -27,9 +24,7 @@ public class Sites {
 //        sites.add(new MolgenisMutationsSite());
 //        sites.add(new RdcPlaygroundSite());
 //        sites.add(new ProgenetixSite());
-    }
 
-    public static List<Site> getSites() {
         return sites;
     }
 }

@@ -5,7 +5,7 @@ import de.samply.lens_beacon_service.entrytype.biosamples.ast2filter.AstNodeList
 
 public class BiosamplesEntryType extends EntryType {
     public BiosamplesEntryType() {
-        super("/biosamples", "POST");
+        this("/biosamples", "POST");
     }
 
     public BiosamplesEntryType(String uri, String method) {

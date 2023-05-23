@@ -6,7 +6,7 @@ import de.samply.lens_beacon_service.entrytype.genomicVariations.ast2filter.AstN
 
 public class GenomicVariationsEntryType extends EntryType {
     public GenomicVariationsEntryType() {
-        super("/g_variants", "POST");
+        this("/g_variants", "POST");
     }
 
     public GenomicVariationsEntryType(String uri, String method) {

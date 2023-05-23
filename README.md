@@ -74,7 +74,7 @@ This is on port 8080. The API provides a single POST endpoint: "query/ast".
 
 This endpoint expects a JSON-serialized AST hierarchy. The simplest possible query looks like this:
 
-'''code
+'''
 {
    "operand" : "AND",
    "children" : [ ],
@@ -91,7 +91,7 @@ This will search for all possible hits, because the "chlidren" list, which may c
 
 A more complex query could look like this:
 
-'''code
+'''
 {
    "operand" : "AND",
    "children" : [ {
@@ -127,7 +127,7 @@ This is done in the class de.samply.lens_beacon_service.query.QueryService, whic
 
 The return string is serialized JSON, and is structured as follows:
 
-'''code
+'''
 [
   {
     "measureReport": { ... },

@@ -1,4 +1,4 @@
-package de.samply.lens_beacon_service.entrytype.biosamples;
+package de.samply.lens_beacon_service.entrytype.individuals;
 
 import de.samply.lens_beacon_service.beacon.BeaconQueryService;
 import de.samply.lens_beacon_service.entrytype.EntryType;
@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Map;
 
 @Slf4j
-public class QueryBiosamples extends Query {
+public class IndividualsQuery extends Query {
     /**
      * Run queries for stratifiers on the genomicVariations endpoint at a given Beacon site, using the supplied filters.
      *
@@ -17,7 +17,11 @@ public class QueryBiosamples extends Query {
     public void runStratifierQueriesAtSite(BeaconQueryService beaconQueryService, EntryType entryType) {
         Map<String, Integer> counts;
         // Runs the query for the gender stratifier.
-        counts =  runStratifierQueryAtSite(beaconQueryService, entryType, NameOntologyMaps.biosmapleTypeUberon);
-        ((BiosamplesGroupAdmin)entryType.groupAdmin).setBiosampleTypeCounts(counts);
+        counts =  runStratifierQueryAtSite(beaconQueryService, entryType, IndividualsNameOntologyMaps.genderNameNcit);
+        ((IndividualsGroupAdmin)entryType.groupAdmin).setGenderCounts(counts);
+
+        // Runs the query for the ethnicity stratifier.
+        counts =  runStratifierQueryAtSite(beaconQueryService, entryType, IndividualsNameOntologyMaps.ethnicityNameNcit);
+        ((IndividualsGroupAdmin)entryType.groupAdmin).setEthnicityCounts(counts);
     }
 }

@@ -2,7 +2,7 @@ package de.samply.lens_beacon_service.entrytype.genomicVariations;
 
 
 import de.samply.lens_beacon_service.entrytype.EntryType;
-import de.samply.lens_beacon_service.entrytype.genomicVariations.ast2filter.AstNodeListConverterGenomicVariations;
+import de.samply.lens_beacon_service.entrytype.genomicVariations.ast2filter.GenomicVariationsAstNodeListConverter;
 
 public class GenomicVariationsEntryType extends EntryType {
     public GenomicVariationsEntryType() {
@@ -11,8 +11,8 @@ public class GenomicVariationsEntryType extends EntryType {
 
     public GenomicVariationsEntryType(String uri, String method) {
         super(uri, method);
-        astNodeListConverter = new AstNodeListConverterGenomicVariations();
-        query = new QueryGenomicVariations();
+        astNodeListConverter = new GenomicVariationsAstNodeListConverter();
+        query = new GenomicVariationsQuery();
         groupAdmin = new GenomicVariationsGroupAdmin();
     }
 }

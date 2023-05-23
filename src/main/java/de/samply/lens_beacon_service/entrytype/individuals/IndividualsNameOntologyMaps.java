@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Map Lens term names onto Ontology IDs understood by Beacon.
  */
-public class NameOntologyMaps {
+public class IndividualsNameOntologyMaps {
     // Maps the standard names for genders onto NCIT codes
     public static Map<String, String> genderNameNcit;
     static {

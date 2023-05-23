@@ -6,7 +6,7 @@ import de.samply.lens_beacon_service.query.Query;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class QueryGenomicVariations extends Query {
+public class GenomicVariationsQuery extends Query {
     /**
      * Run queries for stratifiers on the genomicVariations endpoint at a given Beacon site, using the supplied filters.
      *

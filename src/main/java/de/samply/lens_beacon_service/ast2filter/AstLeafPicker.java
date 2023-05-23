@@ -1,4 +1,4 @@
-package de.samply.lens_beacon_service.convert;
+package de.samply.lens_beacon_service.ast2filter;
 
 import de.samply.lens_beacon_service.lens.AstNode;
 import lombok.extern.slf4j.Slf4j;

@@ -6,7 +6,7 @@ package de.samply.lens_beacon_service.beacon.model;
  * This extension adds a lower-case request granularity.
  */
 
-public class BeaconQueryGranularityLc extends BeaconQuery {
+public class GranularityLcBeaconQuery extends BeaconQuery {
     // Request granularity: boolean, count or detail.
     public String requestedGranularity = "count";
 }

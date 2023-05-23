@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Map Lens term names onto Ontology IDs understood by Beacon.
  */
-public class NameOntologyMaps {
+public class BiosamplesNameOntologyMaps {
     // Maps the standard names for sample types onto NCIT codes
     public static Map<String, String> biosmapleTypeUberon;
     static {

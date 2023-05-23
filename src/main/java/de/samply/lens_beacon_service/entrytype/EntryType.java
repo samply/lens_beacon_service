@@ -2,7 +2,7 @@ package de.samply.lens_beacon_service.entrytype;
 
 import de.samply.lens_beacon_service.beacon.model.BeaconEndpoint;
 import de.samply.lens_beacon_service.beacon.model.BeaconFilter;
-import de.samply.lens_beacon_service.convert.AstNodeListConverter;
+import de.samply.lens_beacon_service.ast2filter.AstNodeListConverter;
 import de.samply.lens_beacon_service.lens.AstNode;
 import de.samply.lens_beacon_service.measurereport.GroupAdmin;
 import de.samply.lens_beacon_service.query.Query;

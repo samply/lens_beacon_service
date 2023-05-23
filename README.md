@@ -74,7 +74,7 @@ This is on port 8080. The API provides a single POST endpoint: "query/ast".
 
 This endpoint expects a JSON-serialized AST hierarchy. The simplest possible query looks like this:
 
-'''
+```
 {
    "operand" : "AND",
    "children" : [ ],
@@ -85,13 +85,13 @@ This endpoint expects a JSON-serialized AST hierarchy. The simplest possible que
    "system" : null,
    "value" : null
 }
-'''
+```
 
 This will search for all possible hits, because the "chlidren" list, which may contain terms that constrain the search, is empty.
 
 A more complex query could look like this:
 
-'''
+```
 {
    "operand" : "AND",
    "children" : [ {
@@ -112,7 +112,7 @@ A more complex query could look like this:
    "value" : null
 }
 
-'''
+```
 
 This has one child node, and it constrains gender to "female". A search using this term should only return a count of individuals who are female.
 
@@ -127,7 +127,7 @@ This is done in the class de.samply.lens_beacon_service.query.QueryService, whic
 
 The return string is serialized JSON, and is structured as follows:
 
-'''
+```
 [
   {
     "measureReport": { ... },
@@ -136,7 +136,7 @@ The return string is serialized JSON, and is structured as follows:
   },
   ...
 ]
-'''
+```
 
 This is a list, with one result per Beacon site. "siteName" and "siteUrl" are metadata about the site. The measure report is a FHIR data structure that contains the results of the search, in the form of counts. E.g. the count of patiens at the given site who fit the search criteria.
 

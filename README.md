@@ -9,7 +9,7 @@ This service will be referred to as LBS in the remainder of this document.
 
 ## Basic principles of operation
 
-Lens is a toolkit for building GUIs for federated querying of medical data, see the [Lens repo](https://example.com) for more details.
+Lens is a toolkit for building GUIs for federated querying of medical data, see the [Lens repo](https://github.com/samply/lens) for more details.
 
 Lens is able to talk to the LBS via a RESTful API.
 

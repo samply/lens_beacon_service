@@ -64,15 +64,23 @@ You can start the service directly from the command line:
 java -jar target/lens_beacon_service\*.jar
 ```
 
-## How the code works
+## Guide to the source code
+
+Broadly speaking, the code splits up into 3 categories of functionality:
+
+- The code that talks to Lens: package de.samply.lens_beacon_service.lens.
+- The code that talks to Beacon: package de.samply.lens_beacon_service.beacon.
+- The code that mediates between Lens and Beacon: packages de.samply.lens_beacon_service.query, de.samply.lens_beacon_service.entrytype, de.samply.lens_beacon_service.site and de.samply.lens_beacon_service.measurereport.
+
+More details of these packages can be found in the following sections.
 
 ### Connection with Lens
 
 Lens needs to be configured so that it knows the URL for the LBS.
 
-This is on port 8080. The API provides a single POST endpoint: "query/ast".
+This is on port 8080. The LBS API provides a single POST endpoint: "query/ast".
 
-This endpoint expects a JSON-serialized AST hierarchy. The simplest possible query looks like this:
+This endpoint expects to get a JSON-serialized AST hierarchy from Lens. The simplest possible query looks like this:
 
 ```
 {
@@ -138,9 +146,9 @@ The return string is serialized JSON, and is structured as follows:
 ]
 ```
 
-This is a list, with one result per Beacon site. "siteName" and "siteUrl" are metadata about the site. The measure report is a FHIR data structure that contains the results of the search, in the form of counts. E.g. the count of patiens at the given site who fit the search criteria.
+This is a list, with one result per Beacon site. "siteName" and "siteUrl" are metadata relating to the site. The measure report is a FHIR data structure that contains the results of the search, in the form of counts. E.g. the count of patiens at the given site who fit the search criteria.
 
-The method QueryService.runQuery() has the following steps:
+The method QueryService.runQuery() executes the following steps:
 
 - Create a fresh list of Sites.
 - Convert the AST nodes from Lens into Beacon filters.
@@ -149,7 +157,7 @@ The method QueryService.runQuery() has the following steps:
 - Decorate measure reports with site name and URL.
 - Serialize to JSON string.
 
-The class de.samply.lens_beacon_service.query.Query is responsible for runninq a query at a single endpoint at a single Beacon site. 
+The class de.samply.lens_beacon_service.query.Query is responsible for runninq a query on a single endpoint at a single Beacon site. 
 
 ### Beacon
 
@@ -165,12 +173,12 @@ The Beacon endpoints mentioned above correspond to the so-called entry types tha
 - individuals
 - genomicVariations
 
-These correspond to standard Beacon endpoints. There are several more standard endpoints, but these have not yet been implemented in this repo. You could also implement your own entry types, e.g. if you want to provide DICOM image metadata. You will see that the implementation follows the same pattern for all entry points.
+These correspond to standard Beacon endpoints. There are several more standard endpoints, but these have not yet been implemented in this repo. You could also implement your own entry types, e.g. if you want to provide DICOM image metadata. You will see that the implementation follows the same pattern for all entry types.
 
-The concept of entry type is quite central in this implementation. There is a class used to capture everything relevant to entry points: de.samply.lens_beacon_service.entrytype.EntryType. Objects of this type are used to keep track of the querying process for a single endpoint at a single Beacon site. The following information is stored here:
+The concept of entry type is quite central in this implementation. There is a class used to capture everything relevant to entry types: de.samply.lens_beacon_service.entrytype.EntryType. Objects of this type are used to keep track of the querying process for a single endpoint at a single Beacon site. The following information is stored here:
 
 - Information about the Beacon endpoint it is using. This information is stored in a BeaconEndpoint object. 
-- A converter, that converts from AST nodes to Beacon filters. In this way, different entry points will get different filters. It is not possible to perform queries that cross entry points. For example, it is not possible to specify that you want all biosamples from individuals who are female. The converters should ensure that the endpoints of the entry types are only supplied with the filters that they are able to deal with.
+- A converter, that converts from AST nodes to Beacon filters. In this way, different entry types will get different filters. It is not possible to perform queries that cross entry types. For example, it is not possible to specify that you want all biosamples from individuals who are female. The converters should ensure that the endpoints of the entry types are only supplied with the filters that they are able to deal with.
 - The generated filters.
 - A GroupAdmin object is used for inserting the counts generated by a Beacon search into a MeasureReportGroupComponent (see section below on measure reports).
 
@@ -192,10 +200,10 @@ A measure report has a hierarchical structure, with 3 levels:
 - MeasureReportGroupComponent
 - MeasureReportGroupStratifierComponent
 
-We have standardized on the following mapping from Beacon results to Measure reports:
+We have standardized on the following mapping from Beacon results to measure reports:
 
 - A Beacon site has one MeasureReport.
-- Each entry type supported by a site has a MeasureReportGroupComponent to itself.
+- Each entry type supported by a site has a MeasureReportGroupComponent to itself. This will receive the population count associated with the entry type, e.g. the count of individuals returned by the query.
 - A MeasureReportGroupComponent can have zero or more MeasureReportGroupStratifierComponents. These will map one-to-one onto stratifier panels in the Lens GUI.
 
 Code for dealing with measure reports can be found in de.samply.lens_beacon_service.measurereport. There are two "Admin" classes that can instantiate and populate MeasureReport objects and MeasureReportGroupComponent objects.

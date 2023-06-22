@@ -19,8 +19,8 @@ public class Sites {
         List<Site> sites = new ArrayList<Site>();
 
         // Site definitions
-        sites.add(new HdCinecaSite());
-//        sites.add(new EgaCinecaSite());
+//        sites.add(new HdCinecaSite());
+        sites.add(new EgaCinecaSite());
 //        sites.add(new MolgenisMutationsSite());
 //        sites.add(new RdcPlaygroundSite());
 //        sites.add(new ProgenetixSite());

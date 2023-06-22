@@ -2,26 +2,24 @@
 
 Part of a federated query system for sites exposing Beacon 2 APIs.
 
-This component translates queries coming from the Lens GUI into Beacon 2.0. It executes them against the Beacon APIs
+This component translates queries coming from a GUI into Beacon 2.0. It executes them against the Beacon APIs
 of one or more sites, and then returns the results.
-
-This service will be referred to as LBS in the remainder of this document.
 
 ## Basic principles of operation
 
-Lens is a toolkit for building GUIs for federated querying of medical data, see the [Lens repo](https://github.com/samply/lens) for more details.
+A GUI component has been set up to allow researchers to run searches against multiple Beacon sites, see [lens-beacon](https://github.com/samply/lens-beacon).
 
-Lens is able to talk to the LBS via a RESTful API.
+The GUI is able to talk to the lens_beacon_service via a RESTful API.
 
-Lens has its own internal language for describing the queries that users are makeing, known as AST. This is a hierarchically structured graph that reflects the structure of the query as seen in the GUI. The leaf nodes of the hierarchy represent the search terms specified by the user.
+The GUI has its own internal language for describing the queries that users are makeing, known as AST. This is a hierarchically structured graph that reflects the structure of the query as seen in the GUI. The leaf nodes of the hierarchy represent the search terms specified by the user.
 
-Lens serializes the AST hierarchy into JSON and sends it to the LBS.
+The GUI serializes the AST hierarchy into JSON and sends it to the lens_beacon_service.
 
-The AST is converted by this service into Beacon filters, which are used to build queries that are sent to all of the Beacon sites that are registered at the LBS.
+The AST is converted by this service into Beacon filters, which are used to build queries that are sent to all of the Beacon sites that are registered at the lens_beacon_service.
 
-Results coming back from the sites are converted into FHIR measure reports, which are serialized and returned to Lens.
+Results coming back from the sites are converted into FHIR measure reports, which are serialized and returned to The GUI.
 
-Lens uses the measure reports to display information from each site, plus summarizing histograms or pie charts for selected attributes.
+The GUI uses the measure reports to display information from each site, plus summarizing histograms or pie charts for selected attributes.
 
 ## Docker
 
@@ -68,19 +66,19 @@ java -jar target/lens_beacon_service\*.jar
 
 Broadly speaking, the code splits up into 3 categories of functionality:
 
-- The code that talks to Lens: package de.samply.lens_beacon_service.lens.
+- The code that talks to the GUI: package de.samply.lens_beacon_service.lens.
 - The code that talks to Beacon: package de.samply.lens_beacon_service.beacon.
-- The code that mediates between Lens and Beacon: packages de.samply.lens_beacon_service.query, de.samply.lens_beacon_service.entrytype, de.samply.lens_beacon_service.site and de.samply.lens_beacon_service.measurereport.
+- The code that mediates between the GUI and Beacon: packages de.samply.lens_beacon_service.query, de.samply.lens_beacon_service.entrytype, de.samply.lens_beacon_service.site and de.samply.lens_beacon_service.measurereport.
 
 More details of these packages can be found in the following sections.
 
-### Connection with Lens
+### Connection with the GUI
 
-Lens needs to be configured so that it knows the URL for the LBS.
+The URL for the lens_beacon_service API is hardcoded into the GUI.
 
-This is on port 8080. The LBS API provides a single POST endpoint: "query/ast".
+This is on port 8080. The lens_beacon_service API provides a single POST endpoint: "query/ast".
 
-This endpoint expects to get a JSON-serialized AST hierarchy from Lens. The simplest possible query looks like this:
+This endpoint expects to get a JSON-serialized AST hierarchy from the GUI. The simplest possible query looks like this:
 
 ```
 {
@@ -126,12 +124,12 @@ This has one child node, and it constrains gender to "female". A search using th
 
 The classes relevant to processing this are:
 
-- de.samply.lens_beacon_service.lens.Api. This class provides the endpoint that Lens talks to.
+- de.samply.lens_beacon_service.lens.Api. This class provides the endpoint that the GUI talks to.
 - de.samply.lens_beacon_service.lens.AstNode. This is the model for an AST hierarchy. It represents a node with zero or more child nodes.
 
 ### Running a query
 
-This is done in the class de.samply.lens_beacon_service.query.QueryService, which is something like the heart of the LBS. The method QueryService.runQuery() takes the AST, runs the query, and returns the results as a string. 
+This is done in the class de.samply.lens_beacon_service.query.QueryService, which is something like the heart of the lens_beacon_service. The method QueryService.runQuery() takes the AST, runs the query, and returns the results as a string. 
 
 The return string is serialized JSON, and is structured as follows:
 
@@ -151,7 +149,7 @@ This is a list, with one result per Beacon site. "siteName" and "siteUrl" are me
 The method QueryService.runQuery() executes the following steps:
 
 - Create a fresh list of Sites.
-- Convert the AST nodes from Lens into Beacon filters.
+- Convert the AST nodes from the GUI into Beacon filters.
 - Run a query at each Beacon site, using the filters. Both the query specified by the user and the queries necessary for the stratifiers will be run.
 - Insert the query results (counts) into measure reports, one per site.
 - Decorate measure reports with site name and URL.
@@ -184,7 +182,7 @@ The concept of entry type is quite central in this implementation. There is a cl
 
 ### Sites
 
-When the LBS has generated a Beacon query, it sends it to each registered Beacon site.
+When the lens_beacon_service has generated a Beacon query, it sends it to each registered Beacon site.
 
 In the current implementation, registered sites are hard-coded into the de.samply.lens_beacon_service.site.Sites class.
 
@@ -192,7 +190,7 @@ The definition of the individual sites, e.g. their URLs, can be found in the pac
 
 ### Measure reports
 
-If you were to run a CQL query against a FHIR data store, you would get the results back as a MeasureReport object. Lens understands measure reports and can use them for populating the GUI. The LBS uses MeasureReport objects for holding the information gathered from the Beacon query in order to take advantage of this functionality.
+If you were to run a CQL query against a FHIR data store, you would get the results back as a MeasureReport object. The GUI understands measure reports and can use them for populating the GUI. The lens_beacon_service uses MeasureReport objects for holding the information gathered from the Beacon query in order to take advantage of this functionality.
 
 A measure report has a hierarchical structure, with 3 levels:
 
@@ -204,7 +202,7 @@ We have standardized on the following mapping from Beacon results to measure rep
 
 - A Beacon site has one MeasureReport.
 - Each entry type supported by a site has a MeasureReportGroupComponent to itself. This will receive the population count associated with the entry type, e.g. the count of individuals returned by the query.
-- A MeasureReportGroupComponent can have zero or more MeasureReportGroupStratifierComponents. These will map one-to-one onto stratifier panels in the Lens GUI.
+- A MeasureReportGroupComponent can have zero or more MeasureReportGroupStratifierComponents. These will map one-to-one onto stratifier panels in the GUI.
 
 Code for dealing with measure reports can be found in de.samply.lens_beacon_service.measurereport. There are two "Admin" classes that can instantiate and populate MeasureReport objects and MeasureReportGroupComponent objects.
 

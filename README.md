@@ -9,13 +9,13 @@ of one or more sites, and then returns the results.
 
 A GUI component has been set up to allow researchers to run searches against multiple Beacon sites, see [lens-beacon](https://github.com/samply/lens-beacon).
 
-The GUI is able to talk to the lens_beacon_service via a RESTful API.
+The GUI is able to talk to the lens-beacon-service via a RESTful API.
 
 The GUI has its own internal language for describing the queries that users are makeing, known as AST. This is a hierarchically structured graph that reflects the structure of the query as seen in the GUI. The leaf nodes of the hierarchy represent the search terms specified by the user.
 
-The GUI serializes the AST hierarchy into JSON and sends it to the lens_beacon_service.
+The GUI serializes the AST hierarchy into JSON and sends it to the lens-beacon-service.
 
-The AST is converted by this service into Beacon filters, which are used to build queries that are sent to all of the Beacon sites that are registered at the lens_beacon_service.
+The AST is converted by this service into Beacon filters, which are used to build queries that are sent to all of the Beacon sites that are registered at the lens-beacon-service.
 
 Results coming back from the sites are converted into FHIR measure reports, which are serialized and returned to The GUI.
 
@@ -26,7 +26,7 @@ The GUI uses the measure reports to display information from each site, plus sum
 To run from Docker:
 
 ```
-docker run --env-file .env samply/lens_beacon_service
+docker run --env-file .env samply/lens-beacon-service
 ```
 
 Alternatively, you can use docker-compose. An example docker-compose.yml file has been
@@ -74,9 +74,9 @@ More details of these packages can be found in the following sections.
 
 ### Connection with the GUI
 
-The URL for the lens_beacon_service API is hardcoded into the GUI.
+The URL for the lens-beacon-service API is hardcoded into the GUI.
 
-This is on port 8080. The lens_beacon_service API provides a single POST endpoint: "query/ast".
+This is on port 8080. The lens-beacon-service API provides a single POST endpoint: "query/ast".
 
 This endpoint expects to get a JSON-serialized AST hierarchy from the GUI. The simplest possible query looks like this:
 
@@ -129,7 +129,7 @@ The classes relevant to processing this are:
 
 ### Running a query
 
-This is done in the class de.samply.lens_beacon_service.query.QueryService, which is something like the heart of the lens_beacon_service. The method QueryService.runQuery() takes the AST, runs the query, and returns the results as a string. 
+This is done in the class de.samply.lens_beacon_service.query.QueryService, which is something like the heart of the lens-beacon-service. The method QueryService.runQuery() takes the AST, runs the query, and returns the results as a string. 
 
 The return string is serialized JSON, and is structured as follows:
 
@@ -182,7 +182,7 @@ The concept of entry type is quite central in this implementation. There is a cl
 
 ### Sites
 
-When the lens_beacon_service has generated a Beacon query, it sends it to each registered Beacon site.
+When the lens-beacon-service has generated a Beacon query, it sends it to each registered Beacon site.
 
 In the current implementation, registered sites are hard-coded into the de.samply.lens_beacon_service.site.Sites class.
 
@@ -190,7 +190,7 @@ The definition of the individual sites, e.g. their URLs, can be found in the pac
 
 ### Measure reports
 
-If you were to run a CQL query against a FHIR data store, you would get the results back as a MeasureReport object. The GUI understands measure reports and can use them for populating the GUI. The lens_beacon_service uses MeasureReport objects for holding the information gathered from the Beacon query in order to take advantage of this functionality.
+If you were to run a CQL query against a FHIR data store, you would get the results back as a MeasureReport object. The GUI understands measure reports and can use them for populating the GUI. The lens-beacon-service uses MeasureReport objects for holding the information gathered from the Beacon query in order to take advantage of this functionality.
 
 A measure report has a hierarchical structure, with 3 levels:
 

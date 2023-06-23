@@ -5,8 +5,8 @@ version: '3.4'
 
 services:
 
-  lens_beacon_service:
-    image: "samply/lens_beacon_service"
+  lens-beacon-service:
+    image: "samply/lens-beacon-service"
     ports:
       - "8080:8080" # Lens-facing API accessed by browser
 

@@ -7,6 +7,6 @@ services:
 
   lens_beacon_service:
     image: "samply/lens_beacon_service"
-    env_file:
-      - .env
+    ports:
+      - "8080:8080" # Lens-facing API accessed by browser
 
